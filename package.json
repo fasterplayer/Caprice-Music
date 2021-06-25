@@ -1,5 +1,5 @@
 {
-	"name": "music-bot",
+	"name": "caprice-music",
 	"version": "0.0.1",
 	"description": "An example music bot written using @discordjs/voice",
 	"scripts": {
@@ -17,7 +17,7 @@
 		"@discordjs/opus": "^0.5.0",
 		"@discordjs/voice": "^0.5.0",
 		"discord-api-types": "^0.18.1",
-		"discord.js": "^13.0.0-dev.02693bc02f45980d8165820a103220f0027b96b7",
+		"discord.js": "^13.0.0-dev.5af2ef5fbc7ad11281f38384c360ae79efe63b39",
 		"libsodium-wrappers": "^0.7.9",
 		"youtube-dl-exec": "^1.2.4",
 		"ytdl-core": "^4.8.2"
