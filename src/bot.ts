@@ -19,9 +19,8 @@ client.on('ready', () => console.log('Ready!'));
 // This contains the setup code for creating slash commands in a guild. The owner of the bot can send "!deploy" to create them.
 client.on('message', async (message: Message) => {
 	if (!message.guild) return;
-	if (!client.application?.owner) await client.application?.fetch();
 
-	if (message.content.toLowerCase() === '!deploy' && message.author.id === client.application?.owner?.id) {
+	if (message.content.toLowerCase() === '!deploy' && message.author.id === '122930489580322818') {
 		await message.guild.commands.set([
 			{
 				name: 'play',
@@ -72,9 +71,11 @@ client.on('interaction', async (interaction: Interaction) => {
 	let subscription = subscriptions.get(interaction.guildID);
 
 	if (interaction.commandName === 'play') {
-		await interaction.defer();
+		// await interaction.defer();
 		// Extract the video URL from the command
 		const url = interaction.options.get('song')!.value! as string;
+
+		console.log(url)
 
 		// If a connection to the guild doesn't already exist and the user is in a voice channel, join that channel
 		// and create a subscription.
