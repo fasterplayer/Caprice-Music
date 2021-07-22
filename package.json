@@ -17,7 +17,7 @@
 		"@discordjs/opus": "^0.5.0",
 		"@discordjs/voice": "^0.5.0",
 		"discord-api-types": "^0.18.1",
-		"discord.js": "^13.0.0-dev.5af2ef5fbc7ad11281f38384c360ae79efe63b39",
+		"discord.js": "^13.0.0-dev.5e70694.1626955541",
 		"libsodium-wrappers": "^0.7.9",
 		"youtube-dl-exec": "^1.2.4",
 		"ytdl-core": "^4.8.2"

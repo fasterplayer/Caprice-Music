@@ -1,7 +1,8 @@
-import { Interaction, GuildMember, Snowflake, Message, Client } from 'discord.js';
+import Discord, { Interaction, GuildMember, Snowflake } from 'discord.js';
 import {
 	AudioPlayerStatus,
 	AudioResource,
+	DiscordGatewayAdapterCreator,
 	entersState,
 	joinVoiceChannel,
 	VoiceConnectionStatus,
@@ -9,18 +10,19 @@ import {
 import { Track } from './music/track';
 import { MusicSubscription } from './music/subscription';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/npm run buildno-require-imports
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const { token } = require('../auth.json');
 
-const client = new Client({ intents: ['GUILD_VOICE_STATES', 'GUILD_MESSAGES', 'GUILDS'] });
+const client = new Discord.Client({ intents: ['GUILD_VOICE_STATES', 'GUILD_MESSAGES', 'GUILDS'] });
 
 client.on('ready', () => console.log('Ready!'));
 
 // This contains the setup code for creating slash commands in a guild. The owner of the bot can send "!deploy" to create them.
-client.on('message', async (message: Message) => {
+client.on('message', async (message) => {
 	if (!message.guild) return;
+	if (!client.application?.owner) await client.application?.fetch();
 
-	if (message.content.toLowerCase() === '!deploy' && message.author.id === '122930489580322818') {
+	if (message.content.toLowerCase() === '!deploy' && message.author.id === client.application?.owner?.id) {
 		await message.guild.commands.set([
 			{
 				name: 'play',
@@ -67,15 +69,13 @@ const subscriptions = new Map<Snowflake, MusicSubscription>();
 
 // Handles slash command interactions
 client.on('interaction', async (interaction: Interaction) => {
-	if (!interaction.isCommand() || !interaction.guildID) return;
-	let subscription = subscriptions.get(interaction.guildID);
+	if (!interaction.isCommand() || !interaction.guildId) return;
+	let subscription = subscriptions.get(interaction.guildId);
 
 	if (interaction.commandName === 'play') {
-		// await interaction.defer();
+		await interaction.defer();
 		// Extract the video URL from the command
 		const url = interaction.options.get('song')!.value! as string;
-
-		console.log(url)
 
 		// If a connection to the guild doesn't already exist and the user is in a voice channel, join that channel
 		// and create a subscription.
@@ -86,11 +86,11 @@ client.on('interaction', async (interaction: Interaction) => {
 					joinVoiceChannel({
 						channelId: channel.id,
 						guildId: channel.guild.id,
-						adapterCreator: channel.guild.voiceAdapterCreator,
+						adapterCreator: channel.guild.voiceAdapterCreator as unknown as DiscordGatewayAdapterCreator,
 					}),
 				);
 				subscription.voiceConnection.on('error', console.warn);
-				subscriptions.set(interaction.guildID, subscription);
+				subscriptions.set(interaction.guildId, subscription);
 			}
 		}
 
@@ -174,7 +174,7 @@ client.on('interaction', async (interaction: Interaction) => {
 	} else if (interaction.commandName === 'leave') {
 		if (subscription) {
 			subscription.voiceConnection.destroy();
-			subscriptions.delete(interaction.guildID);
+			subscriptions.delete(interaction.guildId);
 			await interaction.reply({ content: `Left channel!`, ephemeral: true });
 		} else {
 			await interaction.reply('Not playing in this server!');
