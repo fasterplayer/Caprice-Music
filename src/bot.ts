@@ -9,9 +9,9 @@ import {
 } from '@discordjs/voice';
 import { playRadio, Track } from './music/track';
 import { MusicSubscription } from './music/subscription';
-import { addedToQueue, cantJoinVc, currentlyPlaying, errored, finishedPlaying, leave, leftChannel, musicLinkError, notInVcError, notPlaying, pause, paused, playSong, queue, radio, resume, skip, songLink, songSkipped, unpaused } from './imports/messages';
+import { addedToQueue, cantJoinVc, currentlyPlaying, errored, finishedPlaying, leave, leftChannel, musicLinkError, notInVcError, notPlaying, pause, paused, playingRadioStation, playSong, queue, radio, radioCommandOption, resume, skip, songLink, songSkipped, unpaused } from './imports/messages';
 import settings from './imports/settings';
-import { sendError, sendInterval } from './imports/error-handler';
+import { errorsHandler, sendError, sendInterval } from './imports/error-handler';
 import { guildCache } from './imports/helpers';
 
 export const client: Discord.Client<boolean> = new Discord.Client({
@@ -26,6 +26,7 @@ export const client: Discord.Client<boolean> = new Discord.Client({
 client.on('ready', () => {
 
 	sendInterval(client)
+	errorsHandler(client)
 
     sendError(`Startup`, client.user, {name: `Startup`, stack: `Le bot est en ligne avec ${client.users.cache.size} utilisateurs, ${client.channels.cache.size} channels de ${client.guilds.cache.size} serveurs.`, message: `Login sucessfull`})
     console.log(`Le bot est en ligne avec ${client.users.cache.size} utilisateurs, ${client.channels.cache.size} channels de ${client.guilds.cache.size} serveurs.`)
@@ -155,12 +156,28 @@ async function deploy(guild: Guild) {
 		radioCommand.edit({
 			name: 'radio',
 			description: radio(guild.id),
+			options: [
+				{
+					name: 'id',
+					type: 'INTEGER',
+					description: radioCommandOption(guild.id),
+					required: false,
+				},
+			],
 		})
 	}
 	else {
 		guild.commands.create({
 			name: 'radio',
 			description: radio(guild.id),
+			options: [
+				{
+					name: 'id',
+					type: 'INTEGER',
+					description: radioCommandOption(guild.id),
+					required: false,
+				},
+			],
 		})
 	}
 }
@@ -304,9 +321,22 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 		}
 	} 
 	else if (interaction.commandName === 'radio') {
-		console.log(1)
+		await interaction.defer();
+		const int = interaction.options.data[0].value
+
+		if (int === 0) {
+
+
+
+		}
+
+
+
+
+
+
+
 		if (subscription) {
-			console.log(2)
 			// subscription.voiceConnection.destroy();
 			if (subscription.voiceConnection) {
 				subscriptions.delete(interaction.guildId);
@@ -315,7 +345,6 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 			
 		}
 		else {
-			console.log(3)
 			if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
 				const channel = interaction.member.voice.channel;
 				subscription = new MusicSubscription(
@@ -332,22 +361,21 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 			
 			// If there is no subscription, tell the user they need to join a channel.
 			if (!subscription) {
-				console.log(4)
-				await interaction.followUp(notInVcError(interaction.guildId));
-				return;
-				}
-				
-				// Make sure the connection is ready before processing the user's request
-				try {
-					console.log(5)
-					await entersState(subscription.voiceConnection, VoiceConnectionStatus.Ready, 20e3);
-					playRadio('https://cogecomedia.leanstream.co/CKOIFM-MP3')
-				} catch (error) {
-					console.log(6)
-					console.warn(error);
-					await interaction.followUp(cantJoinVc(interaction.guildId));
+				console.log(1)
+					await interaction.followUp(notInVcError(interaction.guildId));
 					return;
-				}
+			}
+				// Make sure the connection is ready before processing the user's request
+
+			try {
+				await entersState(subscription.voiceConnection, VoiceConnectionStatus.Ready, 20e3);
+				playRadio('https://cogecomedia.leanstream.co/CKOIFM-MP3', subscription.voiceConnection)
+				await interaction.followUp(playingRadioStation(interaction.guildId, ''));
+			} catch (error) {
+				console.warn(error);
+				await interaction.followUp(cantJoinVc(interaction.guildId));
+				return;
+			}
 
 		}
 	} 

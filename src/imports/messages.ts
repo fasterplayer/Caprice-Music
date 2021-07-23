@@ -141,7 +141,19 @@ export function radio(guildID: Snowflake): string {
     else return `Jouer la radio`
 }
 
+export function playingRadioStation(guildID: Snowflake, station: string): string {
+    if (isEnglish(guildID)) {
+        return `Playing ${station}`
+    }
+    else return `Lecture de ${station}`
+}
 
+export function radioCommandOption(guildID: Snowflake): string {
+    if (isEnglish(guildID)) {
+        return `Radio ID or leave blank to get the list.`
+    }
+    else return `ID de la station ou laisser vide pour la liste`
+}
 
 
 
