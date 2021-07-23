@@ -1,7 +1,7 @@
 import { getInfo } from 'ytdl-core';
 import { AudioResource, createAudioResource, demuxProbe } from '@discordjs/voice';
 import { raw as ytdl } from 'youtube-dl-exec';
-
+import got from 'got';
 /**
  * This is the data required to create a Track object
  */
@@ -108,3 +108,31 @@ export class Track implements TrackData {
 		});
 	}
 }
+
+export function playRadio(url: string) {
+	return new Promise((resolve, reject) => {
+		const stream = got.stream(url)//Readable.from([url]);
+		const onError = (error: Error) => {
+			stream.resume();
+			reject(error);
+		};
+		demuxProbe(stream)
+		.then((probe) => resolve(createAudioResource(probe.stream, { inputType: probe.type })))
+		.catch(onError);
+	});
+}
+
+
+
+// public createRadioResource(url: string): Promise<AudioResource<Track>> {
+// 	return new Promise((resolve, reject) => {
+// 		const stream = Readable.from([url]);
+// 		const onError = (error: Error) => {
+// 			stream.resume();
+// 			reject(error);
+// 		};
+// 		demuxProbe(stream)
+// 		.then((probe) => resolve(createAudioResource(probe.stream, { metadata: this, inputType: probe.type })))
+// 		.catch(onError);
+// 	});
+// }

@@ -1,4 +1,4 @@
-import Discord, { Interaction, GuildMember, Snowflake } from 'discord.js';
+import Discord, { Interaction, GuildMember, Snowflake, Guild, ClientOptions } from 'discord.js';
 import {
 	AudioPlayerStatus,
 	AudioResource,
@@ -7,58 +7,175 @@ import {
 	joinVoiceChannel,
 	VoiceConnectionStatus,
 } from '@discordjs/voice';
-import { Track } from './music/track';
+import { playRadio, Track } from './music/track';
 import { MusicSubscription } from './music/subscription';
+import { addedToQueue, cantJoinVc, currentlyPlaying, errored, finishedPlaying, leave, leftChannel, musicLinkError, notInVcError, notPlaying, pause, paused, playSong, queue, radio, resume, skip, songLink, songSkipped, unpaused } from './imports/messages';
+import settings from './imports/settings';
+import { sendError, sendInterval } from './imports/error-handler';
+import { guildCache } from './imports/helpers';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-const { token } = require('../auth.json');
+export const client: Discord.Client<boolean> = new Discord.Client({
+	intents: [
+		'DIRECT_MESSAGES', 'DIRECT_MESSAGE_REACTIONS','DIRECT_MESSAGE_TYPING', 'GUILDS', 'GUILD_BANS',
+		'GUILD_INTEGRATIONS', 'GUILD_INVITES', 'GUILD_MEMBERS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS', 'GUILD_MESSAGE_TYPING',
+		'GUILD_PRESENCES', 'GUILD_VOICE_STATES', 'GUILD_WEBHOOKS'
+	]
+});
 
-const client = new Discord.Client({ intents: ['GUILD_VOICE_STATES', 'GUILD_MESSAGES', 'GUILDS'] });
 
-client.on('ready', () => console.log('Ready!'));
+client.on('ready', () => {
+
+	sendInterval(client)
+
+    sendError(`Startup`, client.user, {name: `Startup`, stack: `Le bot est en ligne avec ${client.users.cache.size} utilisateurs, ${client.channels.cache.size} channels de ${client.guilds.cache.size} serveurs.`, message: `Login sucessfull`})
+    console.log(`Le bot est en ligne avec ${client.users.cache.size} utilisateurs, ${client.channels.cache.size} channels de ${client.guilds.cache.size} serveurs.`)
+
+    client.guilds.cache.forEach(async (guild: Guild) => {
+        if (!guild.ownerId) return console.log(`Je n'ai pas accès aux membres. Veuillez suivre ce tutoriel : https://caprice.fasterplayer.ca/?p=263`)
+
+        await guildCache(guild, client)
+    })
+
+})
+
+
+async function deploy(guild: Guild) {
+	const commands = await guild.commands.fetch()
+
+	const playCommand = commands.find(command => command.name === 'play' && command.client.user?.id === client.user?.id)
+	if (playCommand && playCommand.description !== playSong(guild.id)) {
+		playCommand.edit({
+			name: 'play',
+			description: playSong(guild.id),
+			options: [
+				{
+					name: 'song',
+					type: 'STRING' as const,
+					description: songLink(guild.id),
+					required: true,
+				},
+			],
+		})
+	}
+	else {
+		guild.commands.create({
+			name: 'play',
+			description: playSong(guild.id),
+			options: [
+				{
+					name: 'song',
+					type: 'STRING' as const,
+					description: songLink(guild.id),
+					required: true,
+				},
+			],
+		})
+	}
+
+	const skipCommand = commands.find(command => command.name === 'skip' && command.client.user?.id === client.user?.id)
+
+	if (skipCommand && skipCommand.description !== skip(guild.id)) {
+		skipCommand.edit({
+			name: 'skip',
+			description: skip(guild.id),
+		})
+	}
+	else {
+		guild.commands.create({
+			name: 'skip',
+			description: skip(guild.id),
+
+		})
+	}
+
+	const pauseCommand = commands.find(command => command.name === 'pause' && command.client.user?.id === client.user?.id)
+
+	if (pauseCommand && pauseCommand.description !== pause(guild.id)) {
+		pauseCommand.edit({
+			name: 'pause',
+			description: pause(guild.id),
+		})
+	}
+	else {
+		guild.commands.create({
+			name: 'pause',
+			description: pause(guild.id),
+
+		})
+	}
+
+	const queueCommand = commands.find(command => command.name === 'queue' && command.client.user?.id === client.user?.id)
+
+	if (queueCommand && queueCommand.description !== queue(guild.id)) {
+		queueCommand.edit({
+			name: 'queue',
+			description: queue(guild.id),
+		})
+	}
+	else {
+		guild.commands.create({
+			name: 'queue',
+			description: queue(guild.id),
+		})
+	}
+
+	const resumeCommand = commands.find(command => command.name === 'resume' && command.client.user?.id === client.user?.id)
+
+	if (resumeCommand && resumeCommand.description !== resume(guild.id)) {
+		resumeCommand.edit({
+			name: 'resume',
+			description: resume(guild.id),
+		})
+	}
+	else {
+		guild.commands.create({
+			name: 'resume',
+			description: resume(guild.id),
+		})
+	}
+
+	const leaveCommand = commands.find(command => command.name === 'leave' && command.client.user?.id === client.user?.id)
+
+	if (leaveCommand && leaveCommand.description !== leave(guild.id)) {
+		leaveCommand.edit({
+			name: 'leave',
+			description: leave(guild.id),
+		})
+	}
+	else {
+		guild.commands.create({
+			name: 'leave',
+			description: leave(guild.id),
+		})
+	}
+
+	const radioCommand = commands.find(command => command.name === 'radio' && command.client.user?.id === client.user?.id)
+
+	if (radioCommand && radioCommand.description !== radio(guild.id)) {
+		radioCommand.edit({
+			name: 'radio',
+			description: radio(guild.id),
+		})
+	}
+	else {
+		guild.commands.create({
+			name: 'radio',
+			description: radio(guild.id),
+		})
+	}
+}
+
 
 // This contains the setup code for creating slash commands in a guild. The owner of the bot can send "!deploy" to create them.
-client.on('message', async (message) => {
+client.on('messageCreate', async (message) => {
 	if (!message.guild) return;
 	if (!client.application?.owner) await client.application?.fetch();
 
-	if (message.content.toLowerCase() === '!deploy' && message.author.id === client.application?.owner?.id) {
-		await message.guild.commands.set([
-			{
-				name: 'play',
-				description: 'Plays a song',
-				options: [
-					{
-						name: 'song',
-						type: 'STRING' as const,
-						description: 'The URL of the song to play',
-						required: true,
-					},
-				],
-			},
-			{
-				name: 'skip',
-				description: 'Skip to the next song in the queue',
-			},
-			{
-				name: 'queue',
-				description: 'See the music queue',
-			},
-			{
-				name: 'pause',
-				description: 'Pauses the song that is currently playing',
-			},
-			{
-				name: 'resume',
-				description: 'Resume playback of the current song',
-			},
-			{
-				name: 'leave',
-				description: 'Leave the voice channel',
-			},
-		]);
+	if (message.content.toLowerCase() === '!deploy') {
+		deploy(message.guild)
+	}
 
-		await message.reply('Deployed!');
+	if (message.content.toLowerCase() === '!test') {
 	}
 });
 
@@ -68,7 +185,7 @@ client.on('message', async (message) => {
 const subscriptions = new Map<Snowflake, MusicSubscription>();
 
 // Handles slash command interactions
-client.on('interaction', async (interaction: Interaction) => {
+client.on('interactionCreate', async (interaction: Interaction) => {
 	if (!interaction.isCommand() || !interaction.guildId) return;
 	let subscription = subscriptions.get(interaction.guildId);
 
@@ -76,6 +193,12 @@ client.on('interaction', async (interaction: Interaction) => {
 		await interaction.defer();
 		// Extract the video URL from the command
 		const url = interaction.options.get('song')!.value! as string;
+		const ytbLink: boolean = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?‌​[\w\?‌​=]*)?/.test(url)
+
+		if (!ytbLink) {
+			await interaction.followUp(musicLinkError(interaction.guildId));
+			return;
+		}
 
 		// If a connection to the guild doesn't already exist and the user is in a voice channel, join that channel
 		// and create a subscription.
@@ -96,7 +219,7 @@ client.on('interaction', async (interaction: Interaction) => {
 
 		// If there is no subscription, tell the user they need to join a channel.
 		if (!subscription) {
-			await interaction.followUp('Join a voice channel and then try that again!');
+			await interaction.followUp(notInVcError(interaction.guildId));
 			return;
 		}
 
@@ -105,7 +228,7 @@ client.on('interaction', async (interaction: Interaction) => {
 			await entersState(subscription.voiceConnection, VoiceConnectionStatus.Ready, 20e3);
 		} catch (error) {
 			console.warn(error);
-			await interaction.followUp('Failed to join voice channel within 20 seconds, please try again later!');
+			await interaction.followUp(cantJoinVc(interaction.guildId));
 			return;
 		}
 
@@ -113,22 +236,22 @@ client.on('interaction', async (interaction: Interaction) => {
 			// Attempt to create a Track from the user's video URL
 			const track = await Track.from(url, {
 				onStart() {
-					interaction.followUp({ content: 'Now playing!', ephemeral: true }).catch(console.warn);
+					interaction.followUp({ content: currentlyPlaying(interaction.guildId as Snowflake), ephemeral: true }).catch(console.warn);
 				},
 				onFinish() {
-					interaction.followUp({ content: 'Now finished!', ephemeral: true }).catch(console.warn);
+					interaction.followUp({ content: finishedPlaying(interaction.guildId as Snowflake), ephemeral: true }).catch(console.warn);
 				},
 				onError(error) {
 					console.warn(error);
-					interaction.followUp({ content: `Error: ${error.message}`, ephemeral: true }).catch(console.warn);
+					interaction.followUp({ content: errored(interaction.guildId as Snowflake), ephemeral: true }).catch(console.warn);
 				},
 			});
 			// Enqueue the track and reply a success message to the user
 			subscription.enqueue(track);
-			await interaction.followUp(`Enqueued **${track.title}**`);
+			await interaction.followUp(addedToQueue(interaction.guildId, track.title));
 		} catch (error) {
 			console.warn(error);
-			await interaction.reply('Failed to play track, please try again later!');
+			await interaction.followUp(errored(interaction.guildId));
 		}
 	} else if (interaction.commandName === 'skip') {
 		if (subscription) {
@@ -136,9 +259,9 @@ client.on('interaction', async (interaction: Interaction) => {
 			// listener defined in music/subscription.ts, transitions into the Idle state mean the next track from the queue
 			// will be loaded and played.
 			subscription.audioPlayer.stop();
-			await interaction.reply('Skipped song!');
+			await interaction.reply(songSkipped(interaction.guildId));
 		} else {
-			await interaction.reply('Not playing in this server!');
+			await interaction.reply(notPlaying(interaction.guildId));
 		}
 	} else if (interaction.commandName === 'queue') {
 		// Print out the current queue, including up to the next 5 tracks to be played.
@@ -155,35 +278,86 @@ client.on('interaction', async (interaction: Interaction) => {
 
 			await interaction.reply(`${current}\n\n${queue}`);
 		} else {
-			await interaction.reply('Not playing in this server!');
+			await interaction.reply(notPlaying(interaction.guildId));
 		}
 	} else if (interaction.commandName === 'pause') {
 		if (subscription) {
 			subscription.audioPlayer.pause();
-			await interaction.reply({ content: `Paused!`, ephemeral: true });
+			await interaction.reply({ content: paused(interaction.guildId), ephemeral: true });
 		} else {
-			await interaction.reply('Not playing in this server!');
+			await interaction.reply(notPlaying(interaction.guildId));
 		}
 	} else if (interaction.commandName === 'resume') {
 		if (subscription) {
 			subscription.audioPlayer.unpause();
-			await interaction.reply({ content: `Unpaused!`, ephemeral: true });
+			await interaction.reply({ content: unpaused(interaction.guildId), ephemeral: true });
 		} else {
-			await interaction.reply('Not playing in this server!');
+			await interaction.reply(notPlaying(interaction.guildId));
 		}
 	} else if (interaction.commandName === 'leave') {
 		if (subscription) {
 			subscription.voiceConnection.destroy();
 			subscriptions.delete(interaction.guildId);
-			await interaction.reply({ content: `Left channel!`, ephemeral: true });
+			await interaction.reply({ content: leftChannel(interaction.guildId), ephemeral: true });
 		} else {
-			await interaction.reply('Not playing in this server!');
+			await interaction.reply(notPlaying(interaction.guildId));
 		}
-	} else {
-		await interaction.reply('Unknown command');
-	}
+	} 
+	else if (interaction.commandName === 'radio') {
+		console.log(1)
+		if (subscription) {
+			console.log(2)
+			// subscription.voiceConnection.destroy();
+			if (subscription.voiceConnection) {
+				subscriptions.delete(interaction.guildId);
+				await interaction.reply({ content: leftChannel(interaction.guildId), ephemeral: true });
+			}
+			
+		}
+		else {
+			console.log(3)
+			if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
+				const channel = interaction.member.voice.channel;
+				subscription = new MusicSubscription(
+					joinVoiceChannel({
+						channelId: channel.id,
+						guildId: channel.guild.id,
+						adapterCreator: channel.guild.voiceAdapterCreator as unknown as DiscordGatewayAdapterCreator,
+					}),
+				);
+				subscription.voiceConnection.on('error', console.warn);
+				subscriptions.set(interaction.guildId, subscription);
+			}
+			
+			
+			// If there is no subscription, tell the user they need to join a channel.
+			if (!subscription) {
+				console.log(4)
+				await interaction.followUp(notInVcError(interaction.guildId));
+				return;
+				}
+				
+				// Make sure the connection is ready before processing the user's request
+				try {
+					console.log(5)
+					await entersState(subscription.voiceConnection, VoiceConnectionStatus.Ready, 20e3);
+					playRadio('https://cogecomedia.leanstream.co/CKOIFM-MP3')
+				} catch (error) {
+					console.log(6)
+					console.warn(error);
+					await interaction.followUp(cantJoinVc(interaction.guildId));
+					return;
+				}
+
+		}
+	} 
+	// else {
+	// 	await interaction.reply('Unknown command');
+	// }
 });
 
 client.on('error', console.warn);
 
-void client.login(token);
+void client.login(settings.token);
+
+

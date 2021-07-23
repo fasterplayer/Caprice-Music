@@ -1,9 +1,14 @@
 {
 	"compilerOptions": {
 		"baseUrl": ".",
-		"outDir": "dist",
-		"rootDir": "src",
+		"outDir": "./dist",
 		"esModuleInterop": true,
+		"resolveJsonModule": true,
+		"forceConsistentCasingInFileNames": true,
+		"removeComments": true,
+		"strict": true,
+		"target": "es5",
+		"module": "commonjs",
 		"paths": {
 			"@discordjs/voice": ["../../"],
 			"@discordjs/opus": ["./node_modules/@discordjs/opus"],
@@ -12,6 +17,6 @@
 			"tweetnacl": ["./node_modules/tweetnacl"],
 		}
 	},
-	"include": ["src/**/*.ts"],
-	"exclude": [""]
+	"include": ["./src/**/*"],
+	"exclude": ["node_modules"]
 }
