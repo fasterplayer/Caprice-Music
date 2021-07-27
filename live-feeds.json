@@ -1,0 +1,334 @@
+{
+    "feeds": [
+        {
+            "country": "fr",
+            "id": 1,
+            "name": "NRJ France",
+            "url": "http://185.52.127.168/fr/40050/mp3_128.mp3",
+            "website": "https://www.nrj.fr/",
+            "icon": "http://assets.stickpng.com/thumbs/584826e6cef1014c0b5e49da.png",
+            "band": "FM"
+        },
+    
+        {
+            "country": "ca",
+            "id": 2,
+            "name": "CKOI Montréal",
+            "url": "https://cogecomedia.leanstream.co/CKOIFM-MP3",
+            "website": "https://www.ckoi.com/",
+            "icon": "https://upload.wikimedia.org/wikipedia/fr/thumb/4/4a/96.9_CKOI_%28logo%29.svg/1200px-96.9_CKOI_%28logo%29.png",
+            "band": "FM"
+        },
+        
+        {
+            "country": "ca",
+            "id": 3,
+            "name": "Énergie Montréal",
+            "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/CKMFFMAAC.aac",
+            "website": "https://www.iheartradio.ca/energie/energie-montreal",
+            "icon": "http://www.iheartradio.ca/image/policy:1.1872706:1480535138/Energie-Montreal.png?c=0%2C130%2C598%2C334&w=1000&$p$c$w=a5e468e",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 4,
+            "name": "Nostalgie",
+            "url": "http://streamingp.shoutcast.com/NostalgiePremium-mp3",
+            "website": "https://www.nostalgie.fr/",
+            "icon": "https://www.nostalgie.fr/uploads/assets/nostalgie/logo-nostalgie.png",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 5,
+            "name": "RTL",
+            "url": "http://streaming.radio.rtl.fr/rtl-1-48-192",
+            "website": "https://www.rtl.fr/",
+            "icon": "https://www.peps-syndicat.fr/sites/default/files/styles/media_extra_large/public/articles/1200px-RTL_logo.svg_.png?itok=6PN80wC4",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 6,
+            "name": "RTL2",
+            "url": "http://streaming.radio.rtl2.fr/rtl2-1-48-192",
+            "website": "https://www.rtl.fr/",
+            "icon": "https://www.peps-syndicat.fr/sites/default/files/styles/media_extra_large/public/articles/1200px-RTL_logo.svg_.png?itok=6PN80wC4",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 7,
+            "name": "Virgin France",
+            "url": "http://ais-live.cloud-services.paris:8000/virgin.mp3",
+            "website": "https://www.virginradio.fr/",
+            "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/VirginRadio.png/150px-VirginRadio.png",
+            "band": "FM"
+            
+        },
+        
+        {
+            "country": "ca",
+            "id": 8,
+            "name": "Virgin Montréal",
+            "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/CJFMFMAAC_SC",
+            "website": "https://www.iheartradio.ca/virginradio/montreal",
+            "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/95_9_Virgin_Radio_Logo.svg/1200px-95_9_Virgin_Radio_Logo.png",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 9,
+            "name": "Fun Radio",
+            "url": "https://icecast.funradio.fr/fun-1-44-128?id=webFUNRADIO&aw_0_1st.playerId=playerliveFUNRADIO&aw_0_req.userConsentV2=CPD1dpSPD1dpSAHABBENBTCsAP_AAH_AAAAAGMtX_T5fb2vj-_Z99_tkeYwf95y3p-wzhheMs-8NyYeH7J4Go2MQvBX4JiQKGRgEsjLBAQdlHGBcTQgAgIgViTLMYk2MjzNKJrJAilMbe2NYGD9vnsHDmZCYLQE4mbvzv3ef_noGLAEmCpfAAJiWOBJNGlEKIAIVxAVAKACghGEomsICQQE7I4CPUEAABAYAAQIAQAgohIBAAABAEhEQAgBgIBEARAIAAQAiQEIACJAAFgBYGAQACgGhIABQBCAIQABAQMpgQESLRAAA.f_gAD_gAAAAA",
+            "website": "https://www.funradio.fr/",
+            "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Fun_Radio_2020.png/1200px-Fun_Radio_2020.png",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 10,
+            "name": "Europe1",
+            "url": "http://e1-live-mp3-128.scdn.arkena.com/europe1.mp3",
+            "website": "https://www.europe1.fr/",
+            "icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Europe_1_logo_%282010%29.svg/1200px-Europe_1_logo_%282010%29.png",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 11,
+            "name": "RFM",
+            "url": "https://ais-live.cloud-services.paris:8443/rfm.mp3",
+            "website": "http://www.rfm.fr/",
+            "icon": "https://upload.wikimedia.org/wikipedia/fr/1/19/RFM_logo_2011.png",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 12,
+            "name": "France Inter",
+            "url": "http://direct.franceinter.fr/live/franceinter-midfi.mp3",
+            "website": "https://www.franceinter.fr/",
+            "icon": "https://upload.wikimedia.org/wikipedia/fr/thumb/3/39/France_Inter_logo.svg/1200px-France_Inter_logo.svg.png",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 13,
+            "name": "France Culture",
+            "url": "http://direct.franceculture.fr/live/franceculture-midfi.mp3",
+            "website": "https://www.franceculture.fr/",
+            "icon": "https://upload.wikimedia.org/wikipedia/fr/thumb/c/c9/France_Culture_-_2008.svg/1200px-France_Culture_-_2008.png",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 14,
+            "name": "France Musique",
+            "url": "http://direct.francemusique.fr/live/francemusique-midfi.mp3",
+            "website": "https://www.francemusique.fr/",
+            "icon": "https://upload.wikimedia.org/wikipedia/fr/thumb/2/22/France_Musique_-_2008.svg/1200px-France_Musique_-_2008.png",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 15,
+            "name": "Mouv",
+            "url": "http://direct.mouv.fr/live/mouv-midfi.mp3",
+            "website": "https://www.mouv.fr/",
+            "icon": "https://cdn.radiofrance.fr/s3/cruiser-production/2017/09/49a66509-8c05-11e8-a11d-42010ae60007/1200x680_sitesdefaultfiles20170620299612logo-mouv-carre-1400x1400.jpg",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 16,
+            "name": "OneFM",
+            "url": "https://onefm.ice.infomaniak.ch/onefm-high.mp3",
+            "website": "https://www.onefm.ch/",
+            "icon": "https://cdn-profiles.tunein.com/s7567/images/bannerx.jpg?t=636482377033470000",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 17,
+            "name": "Allzic",
+            "url": "http://allzic49.ice.infomaniak.ch/allzic49.mp3",
+            "website": "https://www.allzicradio.com/fr/",
+            "icon": "https://blog.lusso.fr/wp-content/uploads/2014/12/ALLZICRADIO-.jpg",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 18,
+            "name": "RMC",
+            "url": "http://chai5she.cdn.dvmr.fr/rmcinfo",
+            "website": "https://rmc.bfmtv.com/",
+            "icon": "http://ximiti.eu/wp-content/uploads/2020/07/logo-app-RMC.png",
+            "band": "FM"
+        },
+        
+        {
+            "country": "ca",
+            "id": 19,
+            "name": "94.7 Hits FM",
+            "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/FM947_SC",
+            "website": "https://www.947hits.com/",
+            "icon": "https://dehayf5mhw1h7.cloudfront.net/wp-content/uploads/sites/821/2014/10/22215120/947HitsFM-Logo.jpg",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 20,
+            "name": "Swigg",
+            "url": "https://start-adofm.ice.infomaniak.ch/start-adofm-high.aac",
+            "website": "https://www.swigg.fr/",
+            "icon": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Swigg_logo_2018.png",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 21,
+            "name": "M Radio",
+            "url": "https://mfm.ice.infomaniak.ch/mfm-128.mp3",
+            "website": "https://mradio.fr/",
+            "icon": "https://upload.wikimedia.org/wikipedia/commons/1/15/Logo_Mradio.png",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 22,
+            "name": "Alouette",
+            "url": "https://alouette.ice.infomaniak.ch/alouette-high.aac",
+            "website": "https://www.alouette.fr/",
+            "icon": "https://upload.wikimedia.org/wikipedia/fr/a/a4/Logo_station_Alouette.jpeg",
+            "band": "FM"
+        },
+        
+        {
+            "country": "fr",
+            "id": 23,
+            "name": "Oüi FM",
+            "url": "https://streamingp.shoutcast.com/ouifm-high.mp3",
+            "website": "https://www.ouifm.fr/",
+            "icon": "https://static.wikia.nocookie.net/radiofanon/images/8/87/O%C3%BCi_FM.png/revision/latest?cb=20171020141929",
+            "band": "FM"
+        },
+
+        {
+            "country": "ca",
+            "id": 24,
+            "name": "Kiss 92.5",
+            "url": "https://rogers-hls.leanstream.co/rogers/tor925.stream/playlist.m3u8",
+            "website": "https://www.kiss925.com/",
+            "icon": "https://www.kiss925.com/wp-content/uploads/sites/59/2020/09/KiSS-925-logo-514x514-1.png",
+            "band": "FM"
+        },
+
+        {
+            "country": "ca",
+            "id": 25,
+            "name": "Rouge FM",
+            "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/CITEFMAAC_SC",
+            "website": "https://www.iheartradio.ca/rouge-fm/rouge-fm-montreal",
+            "icon": "https://upload.wikimedia.org/wikipedia/fr/d/d7/Rouge_fm.png",
+            "band": "FM"
+        },
+
+        {
+            "country": "ca",
+            "id": 26,
+            "name": "Rythme FM",
+            "url": "https://cogecomedia.leanstream.co/CFGLFM-MP3",
+            "website": "https://montreal.rythmefm.com/",
+            "icon": "https://cdn-profiles.tunein.com/s31119/images/logog.png",
+            "band": "FM"
+        },
+
+        {
+            "country": "fr",
+            "id": 27,
+            "name": "Metropolys",
+            "url": "https://str0.creacast.com/metropolys",
+            "website": "http://www.metropolys.com/",
+            "icon": "https://lh3.googleusercontent.com/proxy/9feCS3QdksSFHVPdwhlDGFpbGeEhMD--zwKMJpDn-CfmEw-h7bCDKKYOmcXzcN_x0DPMCg80Mic8B7Pp6pEmcqOPH4h1lPvRukqB3ktK9vpQB-iaE0Ffo0qjkA",
+            "band": "FM"
+        },
+
+        {
+            "country": "fr",
+            "id": 28,
+            "name": "Contact FM",
+            "url": "https://radio-contact.ice.infomaniak.ch/radio-contact-high.mp3",
+            "website": "https://www.mycontact.fr/",
+            "icon": "https://www.mycontact.fr/upload/design/5dbaea6d0883b4.76642440.png",
+            "band": "FM"
+        },
+
+        {
+            "country": "fr",
+            "id": 29,
+            "name": "Horizon",
+            "url": "https://horizonradio-bethunelens.ice.infomaniak.ch/horizonradio-bethunelens-128",
+            "website": "https://www.horizonradio.fr/",
+            "icon": "https://www.radio.fr/images/broadcasts/dc/a5/1589/1/c300.png",
+            "band": "FM"
+        },
+
+        {
+            "country": "fr",
+            "id": 30,
+            "name": "Delta FM",
+            "url": "https://deltafmdunkerque.ice.infomaniak.ch/deltafmdunkerque-high.mp3",
+            "website": "https://www.deltafm.fr/",
+            "icon": "https://upload.wikimedia.org/wikipedia/commons/5/51/Logo_delta_2019.png",
+            "band": "FM"
+        },
+
+        {
+            "country": "fr",
+            "id": 31,
+            "name": "France Bleu Nord",
+            "url": "https://icecast.radiofrance.fr/fbnord-midfi.mp3",
+            "website": "https://www.francebleu.fr/nord",
+            "icon": "https://www.francebleu.fr/img/station/logo/logo_francebleu_nord.jpg",
+            "band": "FM"
+        },
+
+        {
+            "country": "ca",
+            "id": 32,
+            "name": "BLVD 102.1 FM",
+            "url": "http://streaming.cfel.leclerccommunication.ca:8000/cfel.mp3?1494574554697.mp3",
+            "website": "https://www.blvd.fm/",
+            "icon": "http://blvd.fm/img/logo-blvd-og.jpg",
+            "band": "FM"
+        },
+
+        {
+            "country": "ca",
+            "id": 33,
+            "name": "CILE Havre Saint-Pierre",
+            "url": "http://stream02.ustream.ca:8000/cile128.mp3",
+            "website": "http://www.cilemf.com/",
+            "icon": "https://upload.wikimedia.org/wikipedia/en/1/13/CILE_95.1_logo.png",
+            "band": "FM"
+        }
+    ]
+}

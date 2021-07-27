@@ -2,6 +2,7 @@ import { getInfo } from 'ytdl-core';
 import { AudioResource, createAudioPlayer, createAudioResource, demuxProbe, NoSubscriberBehavior, VoiceConnection } from '@discordjs/voice';
 import { raw as ytdl } from 'youtube-dl-exec';
 import got from 'got';
+import { LiveFeed } from 'src/imports/radiolist';
 /**
  * This is the data required to create a Track object
  */
@@ -109,7 +110,7 @@ export class Track implements TrackData {
 	}
 }
 
-export function playRadio(url: string, connection: VoiceConnection) {
+export function playRadio(feed: LiveFeed, connection: VoiceConnection) {
 	const player = createAudioPlayer({
 		behaviors: {
 			noSubscriber: NoSubscriberBehavior.Pause,
@@ -118,35 +119,8 @@ export function playRadio(url: string, connection: VoiceConnection) {
 
 	connection.subscribe(player)
 
-
-	const resource = createAudioResource(url);
+	const resource = createAudioResource(feed.url);
 	player.play(resource)
 
 	return connection.subscribe(player)
-
-	// return new Promise((resolve, reject) => {
-	// 	const stream = ''////Readable.from([url]);
-	// 	const onError = (error: Error) => {
-	// 		// stream.resume();
-	// 		reject(error);
-	// 	};
-	// 	demuxProbe(stream)
-	// 	.then((probe) => resolve(createAudioResource(probe.stream, { inputType: probe.type })))
-	// 	.catch(onError);
-	// });
 }
-
-
-
-// public createRadioResource(url: string): Promise<AudioResource<Track>> {
-// 	return new Promise((resolve, reject) => {
-// 		const stream = Readable.from([url]);
-// 		const onError = (error: Error) => {
-// 			stream.resume();
-// 			reject(error);
-// 		};
-// 		demuxProbe(stream)
-// 		.then((probe) => resolve(createAudioResource(probe.stream, { metadata: this, inputType: probe.type })))
-// 		.catch(onError);
-// 	});
-// }

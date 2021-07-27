@@ -1,5 +1,6 @@
-import { Snowflake } from "discord.js";
+import { GuildMember, MessageEmbed, Snowflake } from "discord.js";
 import { isEnglish } from "./helpers";
+import { LiveFeed } from "./radiolist";
 
 export function musicLinkError(guildID: Snowflake): string {
     if (isEnglish(guildID)) {
@@ -143,9 +144,9 @@ export function radio(guildID: Snowflake): string {
 
 export function playingRadioStation(guildID: Snowflake, station: string): string {
     if (isEnglish(guildID)) {
-        return `Playing ${station}`
+        return `Playing **${station}**`
     }
-    else return `Lecture de ${station}`
+    else return `Lecture de **${station}**`
 }
 
 export function radioCommandOption(guildID: Snowflake): string {
@@ -156,9 +157,124 @@ export function radioCommandOption(guildID: Snowflake): string {
 }
 
 
+export function noRadioCountryFound(guildID: Snowflake, country: string): string {
+    if (isEnglish(guildID)) return `No radio feed has been found for ${country}.`
+    else return `Aucune station radio n'a été trouvée pour le pays ${country}.`
+}
 
 
+export function noRadioFeedFound(guildID: Snowflake, id: number): string {
+    if (isEnglish(guildID)) return `No radio feed has been found for id ${id}.`
+    else return `Aucune station radio n'a été trouvée pour l'id ${id}.`
+  }
+  
+export function radiosListByCountry(guildID: Snowflake, feedsList: LiveFeed[], country: string, member: GuildMember): MessageEmbed {
+    const description = feedsList.map(f => `${f.id} | ${f.name}`).join('\n')
+    const embed = new MessageEmbed()
+    .setColor(member.displayColor)
+    .setDescription(`\`\`\`yaml\n${description}\`\`\``)
+
+    if (isEnglish(guildID)) {
+        embed
+        .setTitle(`Here is the list of preset radio Feeds for ${country.toUpperCase()}.`)
+        .setFooter(`To listen to a radio station, use the command /radio station [id]`)
+    }
+
+    else {
+        embed
+        .setTitle(`Voici la liste des stations radio prédéfinies pour ${country.toUpperCase()}.`)
+        .setFooter(`Pour écouter une station radio, utilisez la commande /radio station [id]`)
+    }
+
+    return embed
+}
 
 
+export function radioStationSubCommandName(guildID: Snowflake): string {
+    if (isEnglish(guildID)) return `station`
+    else return `station`
+}
+
+export function radioStationSubCommandDescription(guildID: Snowflake): string {
+    if (isEnglish(guildID)) return `Start playing a radio station by his Id.`
+    else return `Lancer une station radio par son ID.`
+}
+
+export function radioStationSubCommandOptionName(guildID: Snowflake): string {
+    if (isEnglish(guildID)) return `Station ID`
+    else return `ID de la station`
+}
+
+export function radioListSubCommandName(guildID: Snowflake): string {
+    if (isEnglish(guildID)) return `list`
+    else return `liste`
+}
+
+export function radioInfoSubCommandName(guildID: Snowflake): string {
+    if (isEnglish(guildID)) return `stationinfo`
+    else return `infostation`
+}
+
+export function radioListSubCommandDescription(guildID: Snowflake): string {
+    if (isEnglish(guildID)) return `Get the stations list from the specified country`
+    else return `Obtenir la liste des stations radios selon le pays`
+}
+
+export function radioInfoSubCommandDescription(guildID: Snowflake): string {
+    if (isEnglish(guildID)) return `Get a radio station info`
+    else return `Obtenir les informations d'une station radio`
+}
+
+export function radioListSubCommandCountryChoicesName(guildID: Snowflake): string {
+    if (isEnglish(guildID)) return `country`
+    else return `pays`
+}
+
+export function radioListSubCommandCountryChoicesDescription(guildID: Snowflake): string {
+    if (isEnglish(guildID)) return `Desired Country`
+    else return `Pays désiré`
+}
+
+export function radioListCountryName(guildID: Snowflake, country: 'CA' | 'US' | 'FR'): string {
+
+    if (country === 'CA') {
+        if (isEnglish(guildID)) return 'Canada'
+        else return 'Canada'
+    }
+
+    if (country === 'US') {
+        if (isEnglish(guildID)) return 'United-States'
+        else return 'États-Unis'
+    }
+
+    if (country === 'FR') {
+        if (isEnglish(guildID)) return 'France'
+        else return 'France'
+    }
+
+    else return 'error'
+
+}
 
 
+export function stationInfo(member: GuildMember, guildID: string, liveFeed: LiveFeed): MessageEmbed {
+    const embed = new MessageEmbed()
+    .setColor(member.displayColor)
+    .setTitle(liveFeed.name)
+  
+    embed
+    .setThumbnail(liveFeed.icon)
+  
+    if (isEnglish(guildID)) {
+        embed
+        .addField(`Website`, `[${liveFeed.name}](${liveFeed.website})`, true)
+        .addField(`Band`, `${liveFeed.band}`, true)
+    }
+    else {
+        embed
+        .addField(`Site Web`, `[${liveFeed.name}](${liveFeed.website})`, true)
+        .addField(`Bande`, `${liveFeed.band}`, true)
+    }
+
+    return embed
+}

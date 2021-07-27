@@ -76,6 +76,13 @@ export function isEnglish(guildID: string): boolean {
     else return false
 }
 
+export function getGuildPrefix(guildID: string): string {
+    const guildData: DbGuild | undefined = guildsCache.get(guildID as Snowflake)
+    if (!guildData) return '!'
+  
+    return guildData.prefix
+}
+
 export function guildCacheListener(guild: Guild, client: Client) {
     dbGuild.doc(guild.id).onSnapshot(async snapshot => {
         const guildData = snapshot.data()

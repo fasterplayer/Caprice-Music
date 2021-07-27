@@ -9,10 +9,12 @@ import {
 } from '@discordjs/voice';
 import { playRadio, Track } from './music/track';
 import { MusicSubscription } from './music/subscription';
-import { addedToQueue, cantJoinVc, currentlyPlaying, errored, finishedPlaying, leave, leftChannel, musicLinkError, notInVcError, notPlaying, pause, paused, playingRadioStation, playSong, queue, radio, radioCommandOption, resume, skip, songLink, songSkipped, unpaused } from './imports/messages';
+import { addedToQueue, cantJoinVc, currentlyPlaying, errored, finishedPlaying, leave, leftChannel, musicLinkError, noRadioFeedFound, notInVcError, notPlaying, pause, paused, playingRadioStation, playSong, queue, radio, radioCommandOption, radioInfoSubCommandName, radioListSubCommandName, radioStationSubCommandName, resume, skip, songLink, songSkipped, stationInfo, unpaused } from './imports/messages';
 import settings from './imports/settings';
 import { errorsHandler, sendError, sendInterval } from './imports/error-handler';
-import { guildCache } from './imports/helpers';
+import { getGuildPrefix, guildCache } from './imports/helpers';
+import { radioApplicationCommandData } from './imports/application-command';
+import { getFeed, radioList } from './imports/radiolist';
 
 export const client: Discord.Client<boolean> = new Discord.Client({
 	intents: [
@@ -152,33 +154,11 @@ async function deploy(guild: Guild) {
 
 	const radioCommand = commands.find(command => command.name === 'radio' && command.client.user?.id === client.user?.id)
 
-	if (radioCommand && radioCommand.description !== radio(guild.id)) {
-		radioCommand.edit({
-			name: 'radio',
-			description: radio(guild.id),
-			options: [
-				{
-					name: 'id',
-					type: 'INTEGER',
-					description: radioCommandOption(guild.id),
-					required: false,
-				},
-			],
-		})
+	if (radioCommand && radioCommand.description) {
+		radioCommand.edit(radioApplicationCommandData(guild.id))
 	}
 	else {
-		guild.commands.create({
-			name: 'radio',
-			description: radio(guild.id),
-			options: [
-				{
-					name: 'id',
-					type: 'INTEGER',
-					description: radioCommandOption(guild.id),
-					required: false,
-				},
-			],
-		})
+		guild.commands.create(radioApplicationCommandData(guild.id))
 	}
 }
 
@@ -203,8 +183,14 @@ const subscriptions = new Map<Snowflake, MusicSubscription>();
 
 // Handles slash command interactions
 client.on('interactionCreate', async (interaction: Interaction) => {
-	if (!interaction.isCommand() || !interaction.guildId) return;
-	let subscription = subscriptions.get(interaction.guildId);
+	const guild = interaction.guild
+	if (!(guild instanceof Guild)) return
+
+	const member = interaction.member
+	if (!(member instanceof GuildMember)) return
+
+	if (!interaction.isCommand() || !guild.id) return;
+	let subscription = subscriptions.get(guild.id);
 
 	if (interaction.commandName === 'play') {
 		await interaction.defer();
@@ -213,7 +199,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 		const ytbLink: boolean = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?‌​[\w\?‌​=]*)?/.test(url)
 
 		if (!ytbLink) {
-			await interaction.followUp(musicLinkError(interaction.guildId));
+			await interaction.followUp(musicLinkError(guild.id));
 			return;
 		}
 
@@ -230,13 +216,13 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 					}),
 				);
 				subscription.voiceConnection.on('error', console.warn);
-				subscriptions.set(interaction.guildId, subscription);
+				subscriptions.set(guild.id, subscription);
 			}
 		}
 
 		// If there is no subscription, tell the user they need to join a channel.
 		if (!subscription) {
-			await interaction.followUp(notInVcError(interaction.guildId));
+			await interaction.followUp(notInVcError(guild.id));
 			return;
 		}
 
@@ -245,7 +231,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 			await entersState(subscription.voiceConnection, VoiceConnectionStatus.Ready, 20e3);
 		} catch (error) {
 			console.warn(error);
-			await interaction.followUp(cantJoinVc(interaction.guildId));
+			await interaction.followUp(cantJoinVc(guild.id));
 			return;
 		}
 
@@ -253,22 +239,22 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 			// Attempt to create a Track from the user's video URL
 			const track = await Track.from(url, {
 				onStart() {
-					interaction.followUp({ content: currentlyPlaying(interaction.guildId as Snowflake), ephemeral: true }).catch(console.warn);
+					interaction.followUp({ content: currentlyPlaying(guild.id as Snowflake), ephemeral: true }).catch(console.warn);
 				},
 				onFinish() {
-					interaction.followUp({ content: finishedPlaying(interaction.guildId as Snowflake), ephemeral: true }).catch(console.warn);
+					interaction.followUp({ content: finishedPlaying(guild.id as Snowflake), ephemeral: true }).catch(console.warn);
 				},
 				onError(error) {
 					console.warn(error);
-					interaction.followUp({ content: errored(interaction.guildId as Snowflake), ephemeral: true }).catch(console.warn);
+					interaction.followUp({ content: errored(guild.id as Snowflake), ephemeral: true }).catch(console.warn);
 				},
 			});
 			// Enqueue the track and reply a success message to the user
 			subscription.enqueue(track);
-			await interaction.followUp(addedToQueue(interaction.guildId, track.title));
+			await interaction.followUp(addedToQueue(guild.id, track.title));
 		} catch (error) {
 			console.warn(error);
-			await interaction.followUp(errored(interaction.guildId));
+			await interaction.followUp(errored(guild.id));
 		}
 	} else if (interaction.commandName === 'skip') {
 		if (subscription) {
@@ -276,9 +262,9 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 			// listener defined in music/subscription.ts, transitions into the Idle state mean the next track from the queue
 			// will be loaded and played.
 			subscription.audioPlayer.stop();
-			await interaction.reply(songSkipped(interaction.guildId));
+			await interaction.reply(songSkipped(guild.id));
 		} else {
-			await interaction.reply(notPlaying(interaction.guildId));
+			await interaction.reply(notPlaying(guild.id));
 		}
 	} else if (interaction.commandName === 'queue') {
 		// Print out the current queue, including up to the next 5 tracks to be played.
@@ -295,97 +281,103 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 
 			await interaction.reply(`${current}\n\n${queue}`);
 		} else {
-			await interaction.reply(notPlaying(interaction.guildId));
+			await interaction.reply(notPlaying(guild.id));
 		}
 	} else if (interaction.commandName === 'pause') {
 		if (subscription) {
 			subscription.audioPlayer.pause();
-			await interaction.reply({ content: paused(interaction.guildId), ephemeral: true });
+			await interaction.reply({ content: paused(guild.id), ephemeral: true });
 		} else {
-			await interaction.reply(notPlaying(interaction.guildId));
+			await interaction.reply(notPlaying(guild.id));
 		}
 	} else if (interaction.commandName === 'resume') {
 		if (subscription) {
 			subscription.audioPlayer.unpause();
-			await interaction.reply({ content: unpaused(interaction.guildId), ephemeral: true });
+			await interaction.reply({ content: unpaused(guild.id), ephemeral: true });
 		} else {
-			await interaction.reply(notPlaying(interaction.guildId));
+			await interaction.reply(notPlaying(guild.id));
 		}
 	} else if (interaction.commandName === 'leave') {
 		if (subscription) {
 			subscription.voiceConnection.destroy();
-			subscriptions.delete(interaction.guildId);
-			await interaction.reply({ content: leftChannel(interaction.guildId), ephemeral: true });
+			subscriptions.delete(guild.id);
+			await interaction.reply({ content: leftChannel(guild.id), ephemeral: true });
 		} else {
-			await interaction.reply(notPlaying(interaction.guildId));
+			await interaction.reply(notPlaying(guild.id));
 		}
 	} 
 	else if (interaction.commandName === 'radio') {
 		await interaction.defer();
-		const int = interaction.options.data[0].value
+		const subCommand = interaction.options.getSubCommand()
+		const option = interaction.options.data[0].options
 
-		if (int === 0) {
+		if (subCommand === radioStationSubCommandName(guild.id)) {
+			if (option) {
+				const stationID = Number(option[0].value)
+				const feed = getFeed(stationID)
 
+				if (feed) {
+					if (subscription) {
+						try {
+							await entersState(subscription.voiceConnection, VoiceConnectionStatus.Ready, 20e3);
+							playRadio(feed, subscription.voiceConnection)
+							subscriptions.delete(guild.id)
+							await interaction.followUp(playingRadioStation(guild.id, feed.name));
+						} catch (error) {
+							console.warn(error);
+							return;
+						}
+					}
+					else {
+						if (member.voice.channel) {
+							const channel = member.voice.channel;
+							subscription = new MusicSubscription(
+								joinVoiceChannel({
+									channelId: channel.id,
+									guildId: channel.guild.id,
+									adapterCreator: channel.guild.voiceAdapterCreator as unknown as DiscordGatewayAdapterCreator,
+								}),
+							);
+							subscription.voiceConnection.on('error', console.warn);
+							subscriptions.set(guild.id, subscription);
+						}
 
-
+						if (!subscription) {
+							await interaction.followUp(notInVcError(guild.id));
+							return;
+						}
+						try {
+							await entersState(subscription.voiceConnection, VoiceConnectionStatus.Ready, 20e3);
+							playRadio(feed, subscription.voiceConnection)
+							await interaction.followUp(playingRadioStation(guild.id, feed.name));
+						} catch (error) {
+							console.warn(error);
+							await interaction.followUp(cantJoinVc(guild.id));
+							return;
+						}
+					}
+				}
+				else {
+					interaction.followUp({content: noRadioFeedFound(guild.id, stationID)})
+				}
+			}
 		}
+		else if (subCommand === radioInfoSubCommandName(guild.id)) {
+			if (option) {
+				const stationID = Number(option[0].value)
+				const feed = getFeed(stationID)
 
-
-
-
-
-
-
-		if (subscription) {
-			// subscription.voiceConnection.destroy();
-			if (subscription.voiceConnection) {
-				subscriptions.delete(interaction.guildId);
-				await interaction.reply({ content: leftChannel(interaction.guildId), ephemeral: true });
+				if (feed) {
+					interaction.followUp({embeds: [stationInfo(member, guild.id, feed)]})
+				}
+				else {
+					interaction.followUp({content: noRadioFeedFound(guild.id, stationID)})
+				}
 			}
-			
-		}
-		else {
-			if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
-				const channel = interaction.member.voice.channel;
-				subscription = new MusicSubscription(
-					joinVoiceChannel({
-						channelId: channel.id,
-						guildId: channel.guild.id,
-						adapterCreator: channel.guild.voiceAdapterCreator as unknown as DiscordGatewayAdapterCreator,
-					}),
-				);
-				subscription.voiceConnection.on('error', console.warn);
-				subscriptions.set(interaction.guildId, subscription);
-			}
-			
-			
-			// If there is no subscription, tell the user they need to join a channel.
-			if (!subscription) {
-				console.log(1)
-					await interaction.followUp(notInVcError(interaction.guildId));
-					return;
-			}
-				// Make sure the connection is ready before processing the user's request
-
-			try {
-				await entersState(subscription.voiceConnection, VoiceConnectionStatus.Ready, 20e3);
-				playRadio('https://cogecomedia.leanstream.co/CKOIFM-MP3', subscription.voiceConnection)
-				await interaction.followUp(playingRadioStation(interaction.guildId, ''));
-			} catch (error) {
-				console.warn(error);
-				await interaction.followUp(cantJoinVc(interaction.guildId));
-				return;
-			}
-
 		}
 	} 
-	// else {
-	// 	await interaction.reply('Unknown command');
-	// }
 });
 
 client.on('error', console.warn);
 
 void client.login(settings.token);
-
-
