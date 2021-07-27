@@ -1,5 +1,6 @@
 import { ApplicationCommandData, Snowflake } from "discord.js";
-import { radio, radioInfoSubCommandDescription, radioInfoSubCommandName, radioListCountryName, radioListSubCommandCountryChoicesDescription, radioListSubCommandCountryChoicesName, radioListSubCommandDescription, radioListSubCommandName, radioStationSubCommandDescription, radioStationSubCommandName, radioStationSubCommandOptionName } from "./messages";
+import { Country } from "./class";
+import { leave, pause, playSong, queue, radio, radioInfoSubCommandDescription, radioInfoSubCommandName, radioListCountryName, radioListSubCommandCountryChoicesDescription, radioListSubCommandCountryChoicesName, radioListSubCommandDescription, radioListSubCommandName, radioStationSubCommandDescription, radioStationSubCommandName, radioStationSubCommandOptionName, resume, skip, songLink } from "./messages";
 
 export function radioApplicationCommandData(guildID: Snowflake): ApplicationCommandData {
     return {
@@ -31,16 +32,16 @@ export function radioApplicationCommandData(guildID: Snowflake): ApplicationComm
                         required: true,
                         choices: [
                             {
-                                name: radioListCountryName(guildID, 'CA'),
-                                value: 'CA'
+                                name: radioListCountryName(guildID, Country.CA),
+                                value: Country.CA
                             },
                             {
-                                name: radioListCountryName(guildID, 'US'),
-                                value: 'US'
+                                name: radioListCountryName(guildID, Country.US),
+                                value: Country.US
                             },
                             {
-                                name: radioListCountryName(guildID, 'FR'),
-                                value: 'FR'
+                                name: radioListCountryName(guildID, Country.FR),
+                                value: Country.FR
                             }
                         ]
                     }
@@ -60,5 +61,56 @@ export function radioApplicationCommandData(guildID: Snowflake): ApplicationComm
                 ]
             }
         ],
+    }
+}
+
+export function playCommandData(guildID: Snowflake): ApplicationCommandData {
+    return {
+        name: 'play',
+        description: playSong(guildID),
+        options: [
+            {
+                name: 'song',
+                type: 'STRING' as const,
+                description: songLink(guildID),
+                required: true,
+            },
+        ],
+    }
+}
+
+export function skipCommandData(guildID: Snowflake): ApplicationCommandData {
+    return {
+        name: 'skip',
+        description: skip(guildID),
+
+    }
+}
+
+export function pauseCommandData(guildID: Snowflake): ApplicationCommandData {
+    return {
+        name: 'pause',
+        description: pause(guildID),
+    }
+}
+
+export function queueCommandData(guildID: Snowflake): ApplicationCommandData {
+    return {
+        name: 'queue',
+        description: queue(guildID),
+    }
+}
+
+export function resumeCommandData(guildID: Snowflake): ApplicationCommandData {
+    return {
+        name: 'resume',
+        description: resume(guildID),
+    }
+}
+
+export function stopCommandData(guildID: Snowflake): ApplicationCommandData {
+    return {
+        name: 'stop',
+        description: leave(guildID),
     }
 }

@@ -80,33 +80,39 @@ export class DbGuild {
     }
 }
 
-// export class CachedGuildData extends DbGuild {
-//     // tickets: Ticket[] 
-//     // commands:  Command[] 
-//     // rpServerData: {
-//     //     rpServerInfo: {
-//     //         info: RpServerInfo | null
-//     //         lastUpdated: Dayjs | null
-//     //     } | undefined
-//     //     rpServerPlayers: {
-//     //         players: RpServerPlayer[]
-//     //         lastUpdated: Dayjs | null
-//     //     } | undefined
-//     // } | undefined
+export enum Country {
+    CA = 'CA',
+    US = 'US',
+    FR = 'FR'
+}
 
-//     constructor(guild: Guild) {
-//         super(guild)
-//         // this.tickets = []
-//         // this.commands = []
-//         // this.rpServerData = {
-//         //     rpServerInfo: {
-//         //         info: null,
-//         //         lastUpdated: null
-//         //     },
-//         //     rpServerPlayers: {
-//         //         players: [],
-//         //         lastUpdated: null
-//         //     }
-//         // }
-//     }
-// }
+export class LiveFeed {
+    country: string | null
+    id: number
+    name: string
+    url: string
+    website: string
+    icon: string
+    band: string
+
+    constructor(country: string, id: number, name: string, url: string, website: string, icon: string, band: 'AM' | 'FM') {
+        this.country = country
+        this.id = id
+        this.name = name
+        this.url = url
+        this.website = website
+        this.icon = icon
+        this.band = band
+    }
+}
+
+export enum Commands {
+    Play = 'play',
+    Skip = 'skip',
+    Pause = 'pause',
+    Leave = 'leave',
+    Stop = 'stop',
+    Radio = 'radio',
+    Queue = 'queue',
+    Resume = 'resume'
+}

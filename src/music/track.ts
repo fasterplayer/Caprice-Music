@@ -1,8 +1,7 @@
 import { getInfo } from 'ytdl-core';
 import { AudioResource, createAudioPlayer, createAudioResource, demuxProbe, NoSubscriberBehavior, VoiceConnection } from '@discordjs/voice';
 import { raw as ytdl } from 'youtube-dl-exec';
-import got from 'got';
-import { LiveFeed } from 'src/imports/radiolist';
+import { LiveFeed } from 'src/imports/class';
 /**
  * This is the data required to create a Track object
  */

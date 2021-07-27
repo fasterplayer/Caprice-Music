@@ -1,5 +1,5 @@
 import { Client, Guild, GuildChannel, Role, Snowflake, ThreadChannel } from "discord.js"
-import { DbGuild } from "./class"
+import { Commands, DbGuild } from "./class"
 import { dbGuild } from "./firebase"
 import admin from 'firebase-admin'
 
@@ -98,8 +98,7 @@ export async function getGuildFromDB(guild: Guild): Promise<DbGuild | undefined>
   
     if (guildSnapshot.exists) {
       return guildSnapshot.data()
-  
-    } else  return undefined
+    } else return undefined
   } 
 
 export async function guildCache(guild: Guild, client: Client) {
@@ -110,4 +109,8 @@ export async function guildCache(guild: Guild, client: Client) {
     guildsCache.set(guild.id, guildData)
     
     return guildCacheListener(guild, client)
+}
+
+export function audioPossibleCommands(command: Commands): boolean {
+    return Object.values(Commands).includes(command)
 }

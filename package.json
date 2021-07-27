@@ -10,7 +10,7 @@
 		"prettier": "prettier --write **/*.{ts,js,json,yml,yaml}",
 		"build": "tsc",
 		"build:check": "tsc --noEmit --incremental false",
-		"dev": "tsc && node ./dist/src/bot.js"
+		"dev": "tsc && node --trace-warnings ./dist/src/bot.js"
 	},
 	"author": "Amish Shah <contact@shah.gg>",
 	"license": "MIT",

@@ -1,6 +1,7 @@
-import { GuildMember, MessageEmbed, Snowflake } from "discord.js";
+import { GuildMember, MessageEmbed, Snowflake, StageChannel, VoiceChannel } from "discord.js";
+import { Track } from "src/music/track";
+import { Country, LiveFeed } from "./class";
 import { isEnglish } from "./helpers";
-import { LiveFeed } from "./radiolist";
 
 export function musicLinkError(guildID: Snowflake): string {
     if (isEnglish(guildID)) {
@@ -116,9 +117,9 @@ export function queue(guildID: Snowflake): string {
 
 export function pause(guildID: Snowflake): string {
     if (isEnglish(guildID)) {
-        return 'Pauses the song that is currently playing'
+        return 'Pauses/Unpauses the song that is currently playing'
     }
-    else return `Mettre la chanson sur pause`
+    else return `Mettre/Relancer la chanson sur pause`
 }
 
 export function resume(guildID: Snowflake): string {
@@ -168,24 +169,26 @@ export function noRadioFeedFound(guildID: Snowflake, id: number): string {
     else return `Aucune station radio n'a été trouvée pour l'id ${id}.`
   }
   
-export function radiosListByCountry(guildID: Snowflake, feedsList: LiveFeed[], country: string, member: GuildMember): MessageEmbed {
+export function radiosListByCountry(guildID: Snowflake, feedsList: LiveFeed[], country: Country, member: GuildMember): MessageEmbed {
     const description = feedsList.map(f => `${f.id} | ${f.name}`).join('\n')
     const embed = new MessageEmbed()
     .setColor(member.displayColor)
-    .setDescription(`\`\`\`yaml\n${description}\`\`\``)
+    .setAuthor(radioListCountryName(guildID, country))
 
     if (isEnglish(guildID)) {
         embed
-        .setTitle(`Here is the list of preset radio Feeds for ${country.toUpperCase()}.`)
+        .setTitle(`Here is the list of preset radio Feeds for ${country}.`)
         .setFooter(`To listen to a radio station, use the command /radio station [id]`)
-    }
+        .setDescription(description.length ? `\`\`\`yaml\n${description}\`\`\`` : 'None')
 
+    }
     else {
         embed
-        .setTitle(`Voici la liste des stations radio prédéfinies pour ${country.toUpperCase()}.`)
+        .setTitle(`Voici la liste des stations radio prédéfinies pour ${country}.`)
         .setFooter(`Pour écouter une station radio, utilisez la commande /radio station [id]`)
-    }
+        .setDescription(description.length ? `\`\`\`yaml\n${description}\`\`\`` : 'Aucune')
 
+    }
     return embed
 }
 
@@ -235,19 +238,19 @@ export function radioListSubCommandCountryChoicesDescription(guildID: Snowflake)
     else return `Pays désiré`
 }
 
-export function radioListCountryName(guildID: Snowflake, country: 'CA' | 'US' | 'FR'): string {
+export function radioListCountryName(guildID: Snowflake, country: Country): string {
 
-    if (country === 'CA') {
+    if (country === Country.CA) {
         if (isEnglish(guildID)) return 'Canada'
         else return 'Canada'
     }
 
-    if (country === 'US') {
+    if (country === Country.US) {
         if (isEnglish(guildID)) return 'United-States'
         else return 'États-Unis'
     }
 
-    if (country === 'FR') {
+    if (country === Country.FR) {
         if (isEnglish(guildID)) return 'France'
         else return 'France'
     }
@@ -277,4 +280,62 @@ export function stationInfo(member: GuildMember, guildID: string, liveFeed: Live
     }
 
     return embed
+}
+
+export function nothingCurrentlyPlaying(guildID: Snowflake): string {
+    if (isEnglish(guildID)) return `No song is currently playing.`
+    else return `Aucune chanson n'est en cours de lecture.`
+}
+
+export function playing(guildID: Snowflake, content: string): string {
+    if (isEnglish(guildID)) {
+        return `Playing **${content}**`
+    }
+    else return `Lecture de **${content}**`
+}
+
+export function noSkipRadio(guildID: Snowflake): string {
+    if (isEnglish(guildID)) {
+        return 'Radio station cannot be skipped.'
+    }
+    else return `Vous ne pouvez pas "skip" une station radio.`
+}
+
+export function noPauseRadio(guildID: Snowflake): string {
+    if (isEnglish(guildID)) {
+        return 'Radio station cannot be paused.'
+    }
+    else return `Vous ne pouvez pas mettre en pause une station radio.`
+}
+
+export function alreadyInUse(guildID: Snowflake, channel: VoiceChannel | StageChannel): string {
+    if (isEnglish(guildID)) {
+        return `It seems like i am already in use in ${channel.toString()}`
+    }
+    else return `Il semble que je sois déjà en cours d'utilisation dans le salon ${channel.toString()}`
+}
+
+export function songQueue(queue: Track[], guildID: Snowflake): MessageEmbed {
+  let description: string[] = []
+  let title = `File d'attente (Queue)`
+  let empty = 'La queue est vide'
+
+  for (let i = 0; i < queue.length; i++) {
+    if (i === 10) break
+    description.push(`[${queue[i].title}](${queue[i].url})`)
+  }
+
+  if (isEnglish(guildID)) {
+    title = `Queue`
+    empty = 'The queue is Empty'
+    if (queue.length > 10) description.push(`**And more...**`)
+  }
+  else if (queue.length > 10) description.push(`**Et plus...**`)
+  
+  const embed = new MessageEmbed()
+  .setDescription(description.length ? description.join(`\n`) : empty)
+  .setColor(`#0000FF`)
+  .setTitle(title)
+
+  return embed
 }

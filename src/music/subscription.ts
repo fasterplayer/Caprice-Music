@@ -10,6 +10,8 @@ import {
 } from '@discordjs/voice';
 import { Track } from './track';
 
+import EventEmitter from 'events';
+
 function wait(time: number) {
 	return new Promise((resolve) => setTimeout(resolve, time));
 }
@@ -24,11 +26,13 @@ export class MusicSubscription {
 	public queue: Track[];
 	public queueLock = false;
 	public readyLock = false;
+	public radio = false
 
-	public constructor(voiceConnection: VoiceConnection) {
+	public constructor(voiceConnection: VoiceConnection, radio: boolean = false) {
 		this.voiceConnection = voiceConnection;
 		this.audioPlayer = createAudioPlayer();
 		this.queue = [];
+		this.radio = radio
 
 		this.voiceConnection.on('stateChange', async (_, newState) => {
 			if (newState.status === VoiceConnectionStatus.Disconnected) {

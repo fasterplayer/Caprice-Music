@@ -1,33 +1,15 @@
 import { Message, Guild, GuildMember, MessageEmbed } from "discord.js"
 import fs from 'fs'
 import path from "path"
+import { Country, LiveFeed } from "./class"
 import { noRadioCountryFound, radiosListByCountry } from "./messages"
 
-export class LiveFeed {
-    country: string | null
-    id: number
-    name: string
-    url: string
-    website: string
-    icon: string
-    band: string
-
-    constructor(country: string, id: number, name: string, url: string, website: string, icon: string, band: 'AM' | 'FM') {
-        this.country = country
-        this.id = id
-        this.name = name
-        this.url = url
-        this.website = website
-        this.icon = icon
-        this.band = band
-    }
-}
 
 
-export function radioList(country: string, guild: Guild, member: GuildMember): MessageEmbed {
+
+export function radioList(country: Country, guild: Guild, member: GuildMember): MessageEmbed {
 
         const feedList = getFeedByCountry(country)
-        // if (!feedList.length) return noRadioCountryFound(guild.id, country)
         return radiosListByCountry(guild.id, feedList, country, member)
 }
 
