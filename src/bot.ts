@@ -7,13 +7,14 @@ import {
 } from '@discordjs/voice';
 import { playRadio, Track } from './music/track';
 import { MusicSubscription } from './music/subscription';
-import { addedToQueue, alreadyInUse, cantJoinVc, errored, leave, leftChannel, musicLinkError, noPauseRadio, noRadioFeedFound, noSkipRadio, notInVcError, notPlaying, pause, paused, playingRadioStation, playSong, queue, radioInfoSubCommandName, radioListSubCommandName, radioStationSubCommandName, resume, skip, songLink, songQueue, songSkipped, stationInfo, unpaused } from './imports/messages';
+import { addedToQueue, alreadyInUse, cantJoinVc, errored, leave, leftChannel, musicLinkError, noPauseRadio, noRadioFeedFound, noSkipRadio, noSongInPlaylist, notInVcError, notPlaying, pause, paused, playingRadioStation, playlistAddedToQueue, playSong, queue, radioInfoSubCommandName, radioListSubCommandName, radioStationSubCommandName, resume, skip, songLink, songQueue, songSkipped, stationInfo, unpaused } from './imports/messages';
 import settings from './imports/settings';
 import { errorsHandler, sendError, sendInterval } from './imports/error-handler';
 import { audioPossibleCommands, guildCache } from './imports/helpers';
 import { pauseCommandData, playCommandData, queueCommandData, radioApplicationCommandData, resumeCommandData, skipCommandData, stopCommandData } from './imports/application-command';
 import { getFeed, radioList } from './imports/radiolist';
 import { Commands, Country } from './imports/class';
+import ytpl from 'ytpl';
 
 export const client: Discord.Client<boolean> = new Discord.Client({
 	intents: [
@@ -235,8 +236,10 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 		// Extract the video URL from the command
 		const url = interaction.options.get('song')!.value! as string;
 		const ytbLink: boolean = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?‌​[\w\?‌​=]*)?/.test(url)
+	    const playlistReg: boolean = /^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/.test(url)
 
-		if (!ytbLink) {
+
+		if (!ytbLink && !playlistReg) {
 			await interaction.followUp(musicLinkError(guild.id));
 			return;
 		}
@@ -276,27 +279,69 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 			return;
 		}
 
-		try {
-			// Attempt to create a Track from the user's video URL
-			const track = await Track.from(url, {
-				onStart() {
-					// interaction.followUp({ content: currentlyPlaying(guild.id), ephemeral: true }).catch(console.warn);
-				},
-				onFinish() {
-					// interaction.followUp({ content: finishedPlaying(guild.id), ephemeral: true }).catch(console.warn);é
-				},
-				onError(error) {
-					console.warn(error);
-					interaction.followUp({ content: errored(guild.id), ephemeral: true }).catch(console.warn);
-				},
-			});
-			// Enqueue the track and reply a success message to the user
-			subscription.enqueue(track);
-			await interaction.followUp(addedToQueue(guild.id, track.title));
-		} catch (error) {
-			console.warn(error);
-			await interaction.followUp(errored(guild.id));
+
+		if (playlistReg) {
+			try {
+				const getID = await ytpl.getPlaylistID(url)
+				const playlist = await ytpl(getID)
+				const items = playlist.items
+
+				if (items.length) {
+					items.forEach(async item => {
+						const track = await Track.from(item.url, {
+							onStart() {
+								// interaction.followUp({ content: currentlyPlaying(guild.id), ephemeral: true }).catch(console.warn);
+							},
+							onFinish() {
+								// interaction.followUp({ content: finishedPlaying(guild.id), ephemeral: true }).catch(console.warn);é
+							},
+							onError(error) {
+								console.warn(error);
+								interaction.followUp({ content: errored(guild.id), ephemeral: true }).catch(console.warn);
+							},
+						});
+
+						subscription?.enqueue(track);
+
+					}) 
+					await interaction.followUp({embeds: [playlistAddedToQueue(guild.id, playlist)]});
+				} else {
+					await interaction.followUp({content: noSongInPlaylist(guild.id)});
+				}
+
+				return;
+			} catch (error) {
+				console.warn(error);
+				await interaction.followUp(errored(guild.id));
+			}
+
+		} else {
+			try {
+				// Attempt to create a Track from the user's video URL
+				const track = await Track.from(url, {
+					onStart() {
+						// interaction.followUp({ content: currentlyPlaying(guild.id), ephemeral: true }).catch(console.warn);
+					},
+					onFinish() {
+						// interaction.followUp({ content: finishedPlaying(guild.id), ephemeral: true }).catch(console.warn);é
+					},
+					onError(error) {
+						console.warn(error);
+						interaction.followUp({ content: errored(guild.id), ephemeral: true }).catch(console.warn);
+					},
+				});
+				// Enqueue the track and reply a success message to the user
+				subscription.enqueue(track);
+				await interaction.followUp(addedToQueue(guild.id, track.title));
+				return;
+			} catch (error) {
+				console.warn(error);
+				await interaction.followUp(errored(guild.id));
+			}
 		}
+
+
+		
 	} else if (interaction.commandName === Commands.Skip) {
 
 

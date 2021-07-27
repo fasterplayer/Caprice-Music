@@ -10,8 +10,6 @@ import {
 } from '@discordjs/voice';
 import { Track } from './track';
 
-import EventEmitter from 'events';
-
 function wait(time: number) {
 	return new Promise((resolve) => setTimeout(resolve, time));
 }

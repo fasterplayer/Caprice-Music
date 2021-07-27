@@ -22,7 +22,8 @@
 		"firebase-admin": "^9.11.0",
 		"libsodium-wrappers": "^0.7.9",
 		"youtube-dl-exec": "^1.2.4",
-		"ytdl-core": "^4.8.2"
+		"ytdl-core": "^4.8.2",
+		"ytpl": "^2.2.1"
 	},
 	"devDependencies": {
 		"tsconfig-paths": "^3.9.0",

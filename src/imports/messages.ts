@@ -1,5 +1,6 @@
 import { GuildMember, MessageEmbed, Snowflake, StageChannel, VoiceChannel } from "discord.js";
 import { Track } from "src/music/track";
+import ytpl from "ytpl";
 import { Country, LiveFeed } from "./class";
 import { isEnglish } from "./helpers";
 
@@ -50,6 +51,35 @@ export function addedToQueue(guildID: Snowflake, title: string): string {
         return `Enqueued **${title}**`
     }
     else return `Ajoutée à la queue **${title}**`
+}
+
+export function playlistAddedToQueue(guildID: Snowflake, playlist: ytpl.Result): MessageEmbed {
+    const embed = new MessageEmbed()
+    .setAuthor(playlist.author.name, playlist.author.bestAvatar.url ? playlist.author.bestAvatar.url : undefined, playlist.author.url)
+    .setURL(playlist.url)
+
+    if (playlist.bestThumbnail.url) embed.setThumbnail(playlist.bestThumbnail.url)
+
+    
+    if (isEnglish(guildID)) {
+       embed
+       .setTitle(`The playlist ${playlist.title} has been added to queue!`)
+       .addField(`Total songs`, playlist.items.length.toString())
+    }
+    else {
+        embed
+        .setTitle(`La playlist ${playlist.title} a été ajoutée à la queue!`)
+        .addField(`Chansons`, playlist.items.length.toString())
+    }
+
+    return embed
+}
+
+export function noSongInPlaylist(guildID: Snowflake): string {
+    if (isEnglish(guildID)) {
+        return 'No songs have been found in this playlist.'
+    }
+    else return `Aucune chanson n'a été trouvée dans cette playlist.`
 }
 
 export function songSkipped(guildID: Snowflake): string {
@@ -317,7 +347,7 @@ export function alreadyInUse(guildID: Snowflake, channel: VoiceChannel | StageCh
 
 export function songQueue(queue: Track[], guildID: Snowflake): MessageEmbed {
   let description: string[] = []
-  let title = `File d'attente (Queue)`
+  let title = `File d'attente (Queue) - ${queue.length}`
   let empty = 'La queue est vide'
 
   for (let i = 0; i < queue.length; i++) {
