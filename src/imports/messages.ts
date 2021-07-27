@@ -87,70 +87,70 @@ export function leftChannel(guildID: Snowflake): string {
     else return `Salon vocal quitté!`
 }
 
-export function playSong(guildID: Snowflake): string {
+export function playSong(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) {
         return 'Plays a song'
     }
     else return `Jouer une chanson`
 }
 
-export function songLink(guildID: Snowflake): string {
+export function songLink(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) {
         return 'The youtube URL of the song to play'
     }
     else return `Le lien youtube de la chanson`
 }
 
-export function skip(guildID: Snowflake): string {
+export function skip(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) {
         return 'Skip to the next song in the queue'
     }
     else return `Passer à la chanson suivante`
 }
 
-export function queue(guildID: Snowflake): string {
+export function queue(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) {
         return 'See the music queue'
     }
     else return `Voir la liste des chansons en queue`
 }
 
-export function pause(guildID: Snowflake): string {
+export function pause(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) {
         return 'Pauses/Unpauses the song that is currently playing'
     }
     else return `Mettre/Relancer la chanson sur pause`
 }
 
-export function resume(guildID: Snowflake): string {
+export function resume(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) {
         return 'Resume playback of the current song'
     }
     else return `Reprendre la chanson en cours`
 }
 
-export function leave(guildID: Snowflake): string {
+export function leave(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) {
         return 'Leave the voice channel and empty queue'
     }
     else return `Quitter le salon et vider la queue`
 }
 
-export function radio(guildID: Snowflake): string {
+export function radio(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) {
         return 'Play Radio'
     }
     else return `Jouer la radio`
 }
 
-export function playingRadioStation(guildID: Snowflake, station: string): string {
+export function playingRadioStation(guildID: Snowflake, station: string | undefined = undefined): string {
     if (isEnglish(guildID)) {
         return `Playing **${station}**`
     }
     else return `Lecture de **${station}**`
 }
 
-export function radioCommandOption(guildID: Snowflake): string {
+export function radioCommandOption(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) {
         return `Radio ID or leave blank to get the list.`
     }
@@ -193,52 +193,52 @@ export function radiosListByCountry(guildID: Snowflake, feedsList: LiveFeed[], c
 }
 
 
-export function radioStationSubCommandName(guildID: Snowflake): string {
+export function radioStationSubCommandName(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) return `station`
     else return `station`
 }
 
-export function radioStationSubCommandDescription(guildID: Snowflake): string {
+export function radioStationSubCommandDescription(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) return `Start playing a radio station by his Id.`
     else return `Lancer une station radio par son ID.`
 }
 
-export function radioStationSubCommandOptionName(guildID: Snowflake): string {
+export function radioStationSubCommandOptionName(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) return `Station ID`
     else return `ID de la station`
 }
 
-export function radioListSubCommandName(guildID: Snowflake): string {
+export function radioListSubCommandName(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) return `list`
     else return `liste`
 }
 
-export function radioInfoSubCommandName(guildID: Snowflake): string {
+export function radioInfoSubCommandName(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) return `stationinfo`
     else return `infostation`
 }
 
-export function radioListSubCommandDescription(guildID: Snowflake): string {
+export function radioListSubCommandDescription(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) return `Get the stations list from the specified country`
     else return `Obtenir la liste des stations radios selon le pays`
 }
 
-export function radioInfoSubCommandDescription(guildID: Snowflake): string {
+export function radioInfoSubCommandDescription(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) return `Get a radio station info`
     else return `Obtenir les informations d'une station radio`
 }
 
-export function radioListSubCommandCountryChoicesName(guildID: Snowflake): string {
+export function radioListSubCommandCountryChoicesName(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) return `country`
     else return `pays`
 }
 
-export function radioListSubCommandCountryChoicesDescription(guildID: Snowflake): string {
+export function radioListSubCommandCountryChoicesDescription(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) return `Desired Country`
     else return `Pays désiré`
 }
 
-export function radioListCountryName(guildID: Snowflake, country: Country): string {
+export function radioListCountryName(guildID: Snowflake | undefined = undefined, country: Country): string {
 
     if (country === Country.CA) {
         if (isEnglish(guildID)) return 'Canada'
@@ -260,7 +260,7 @@ export function radioListCountryName(guildID: Snowflake, country: Country): stri
 }
 
 
-export function stationInfo(member: GuildMember, guildID: string, liveFeed: LiveFeed): MessageEmbed {
+export function stationInfo(member: GuildMember, guildID: Snowflake, liveFeed: LiveFeed): MessageEmbed {
     const embed = new MessageEmbed()
     .setColor(member.displayColor)
     .setTitle(liveFeed.name)

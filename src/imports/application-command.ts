@@ -2,7 +2,7 @@ import { ApplicationCommandData, Snowflake } from "discord.js";
 import { Country } from "./class";
 import { leave, pause, playSong, queue, radio, radioInfoSubCommandDescription, radioInfoSubCommandName, radioListCountryName, radioListSubCommandCountryChoicesDescription, radioListSubCommandCountryChoicesName, radioListSubCommandDescription, radioListSubCommandName, radioStationSubCommandDescription, radioStationSubCommandName, radioStationSubCommandOptionName, resume, skip, songLink } from "./messages";
 
-export function radioApplicationCommandData(guildID: Snowflake): ApplicationCommandData {
+export function radioApplicationCommandData(guildID: Snowflake | undefined = undefined): ApplicationCommandData {
     return {
         name: 'radio',
         description: radio(guildID),
@@ -64,7 +64,7 @@ export function radioApplicationCommandData(guildID: Snowflake): ApplicationComm
     }
 }
 
-export function playCommandData(guildID: Snowflake): ApplicationCommandData {
+export function playCommandData(guildID: Snowflake | undefined = undefined): ApplicationCommandData {
     return {
         name: 'play',
         description: playSong(guildID),
@@ -79,7 +79,7 @@ export function playCommandData(guildID: Snowflake): ApplicationCommandData {
     }
 }
 
-export function skipCommandData(guildID: Snowflake): ApplicationCommandData {
+export function skipCommandData(guildID: Snowflake | undefined = undefined): ApplicationCommandData {
     return {
         name: 'skip',
         description: skip(guildID),
@@ -87,28 +87,28 @@ export function skipCommandData(guildID: Snowflake): ApplicationCommandData {
     }
 }
 
-export function pauseCommandData(guildID: Snowflake): ApplicationCommandData {
+export function pauseCommandData(guildID: Snowflake | undefined = undefined): ApplicationCommandData {
     return {
         name: 'pause',
         description: pause(guildID),
     }
 }
 
-export function queueCommandData(guildID: Snowflake): ApplicationCommandData {
+export function queueCommandData(guildID: Snowflake | undefined = undefined): ApplicationCommandData {
     return {
         name: 'queue',
         description: queue(guildID),
     }
 }
 
-export function resumeCommandData(guildID: Snowflake): ApplicationCommandData {
+export function resumeCommandData(guildID: Snowflake | undefined = undefined): ApplicationCommandData {
     return {
         name: 'resume',
         description: resume(guildID),
     }
 }
 
-export function stopCommandData(guildID: Snowflake): ApplicationCommandData {
+export function stopCommandData(guildID: Snowflake | undefined = undefined): ApplicationCommandData {
     return {
         name: 'stop',
         description: leave(guildID),

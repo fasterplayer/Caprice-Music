@@ -68,9 +68,9 @@ export async function guildDB(guild: Guild) {
     return guildRef.set(guildDbData)
 }
 
-export function isEnglish(guildID: string): boolean {
+export function isEnglish(guildID: Snowflake | undefined): boolean {
     const guildData: DbGuild | undefined = guildsCache.get(guildID as Snowflake)
-    if (!guildData) return false
+    if (!guildData || !guildID) return false
   
     if (guildData.english) return true
     else return false

@@ -30,7 +30,7 @@ client.on('ready', () => {
 	sendInterval(client)
 	errorsHandler(client)
 
-    sendError(`Startup`, client.user, {name: `Startup`, stack: `Le bot est en ligne avec ${client.users.cache.size} utilisateurs, ${client.channels.cache.size} channels de ${client.guilds.cache.size} serveurs.`, message: `Login sucessfull`})
+    sendError(`Startup`, client.user, {name: `Startup`, stack: `Le bot est en ligne avec ${client.users.cache.size} utilisateurs, ${client.channels.cache.size} channels de ${client.guilds.cache.size} serveurs.`, message: `Login successful`})
     console.log(`Le bot est en ligne avec ${client.users.cache.size} utilisateurs, ${client.channels.cache.size} channels de ${client.guilds.cache.size} serveurs.`)
 
     client.guilds.cache.forEach(async (guild: Guild) => {
@@ -42,10 +42,10 @@ client.on('ready', () => {
 })
 
 
-async function deploy(guild: Guild) {
+async function localDeploy(guild: Guild) {
 	const commands = await guild.commands.fetch()
 
-	const playCommand = commands.find(command => command.name === Commands.Play && command.client.user?.id === client.user?.id)
+	const playCommand = commands.find(command => command.name === Commands.Play)
 	if (playCommand && playCommand.description !== playSong(guild.id)) {
 		playCommand.edit(playCommandData(guild.id))
 	}
@@ -53,7 +53,7 @@ async function deploy(guild: Guild) {
 		guild.commands.create(playCommandData(guild.id))
 	}
 
-	const skipCommand = commands.find(command => command.name === Commands.Skip && command.client.user?.id === client.user?.id)
+	const skipCommand = commands.find(command => command.name === Commands.Skip)
 
 	if (skipCommand && skipCommand.description !== skip(guild.id)) {
 		skipCommand.edit(skipCommandData(guild.id))
@@ -62,7 +62,7 @@ async function deploy(guild: Guild) {
 		guild.commands.create(skipCommandData(guild.id))
 	}
 
-	const pauseCommand = commands.find(command => command.name === Commands.Pause && command.client.user?.id === client.user?.id)
+	const pauseCommand = commands.find(command => command.name === Commands.Pause)
 
 	if (pauseCommand && pauseCommand.description !== pause(guild.id)) {
 		pauseCommand.edit(pauseCommandData(guild.id))
@@ -71,7 +71,7 @@ async function deploy(guild: Guild) {
 		guild.commands.create(pauseCommandData(guild.id))
 	}
 
-	const queueCommand = commands.find(command => command.name === Commands.Queue && command.client.user?.id === client.user?.id)
+	const queueCommand = commands.find(command => command.name === Commands.Queue)
 
 	if (queueCommand && queueCommand.description !== queue(guild.id)) {
 		queueCommand.edit(queueCommandData(guild.id))
@@ -80,7 +80,7 @@ async function deploy(guild: Guild) {
 		guild.commands.create(queueCommandData(guild.id))
 	}
 
-	const resumeCommand = commands.find(command => command.name === Commands.Resume && command.client.user?.id === client.user?.id)
+	const resumeCommand = commands.find(command => command.name === Commands.Resume)
 
 	if (resumeCommand && resumeCommand.description !== resume(guild.id)) {
 		resumeCommand.edit(resumeCommandData(guild.id))
@@ -89,7 +89,7 @@ async function deploy(guild: Guild) {
 		guild.commands.create(resumeCommandData(guild.id))
 	}
 
-	const leaveCommand = commands.find(command => command.name === Commands.Stop && command.client.user?.id === client.user?.id)
+	const leaveCommand = commands.find(command => command.name === Commands.Stop)
 
 	if (leaveCommand && leaveCommand.description !== leave(guild.id)) {
 		leaveCommand.edit(stopCommandData(guild.id))
@@ -98,7 +98,7 @@ async function deploy(guild: Guild) {
 		guild.commands.create(stopCommandData(guild.id))
 	}
 
-	const radioCommand = commands.find(command => command.name === Commands.Radio && command.client.user?.id === client.user?.id)
+	const radioCommand = commands.find(command => command.name === Commands.Radio)
 
 	if (radioCommand && radioCommand.description) {
 		radioCommand.edit(radioApplicationCommandData(guild.id))
@@ -108,17 +108,91 @@ async function deploy(guild: Guild) {
 	}
 }
 
+async function globalDeploy() {
+	if (!client.application) return false
+	const commands = await client.application.commands.fetch()
+	const applicationCommands = client.application.commands
+
+	const playCommand = commands.find(command => command.name === Commands.Play)
+	if (playCommand && playCommand.description !== playSong()) {
+		playCommand.edit(playCommandData())
+	}
+	else {
+		applicationCommands.create(playCommandData())
+	}
+
+	const skipCommand = commands.find(command => command.name === Commands.Skip)
+
+	if (skipCommand && skipCommand.description !== skip()) {
+		skipCommand.edit(skipCommandData())
+	}
+	else {
+		applicationCommands.create(skipCommandData())
+	}
+
+	const pauseCommand = commands.find(command => command.name === Commands.Pause)
+
+	if (pauseCommand && pauseCommand.description !== pause()) {
+		pauseCommand.edit(pauseCommandData())
+	}
+	else {
+		applicationCommands.create(pauseCommandData())
+	}
+
+	const queueCommand = commands.find(command => command.name === Commands.Queue)
+
+	if (queueCommand && queueCommand.description !== queue()) {
+		queueCommand.edit(queueCommandData())
+	}
+	else {
+		applicationCommands.create(queueCommandData())
+	}
+
+	const resumeCommand = commands.find(command => command.name === Commands.Resume)
+
+	if (resumeCommand && resumeCommand.description !== resume()) {
+		resumeCommand.edit(resumeCommandData())
+	}
+	else {
+		applicationCommands.create(resumeCommandData())
+	}
+
+	const leaveCommand = commands.find(command => command.name === Commands.Stop)
+
+	if (leaveCommand && leaveCommand.description !== leave()) {
+		leaveCommand.edit(stopCommandData())
+	}
+	else {
+		applicationCommands.create(stopCommandData())
+	}
+
+	const radioCommand = commands.find(command => command.name === Commands.Radio)
+
+	if (radioCommand && radioCommand.description) {
+		radioCommand.edit(radioApplicationCommandData())
+	}
+	else {
+		applicationCommands.create(radioApplicationCommandData())
+	}
+}
+
 
 // This contains the setup code for creating slash commands in a guild. The owner of the bot can send "!deploy" to create them.
 client.on('messageCreate', async (message) => {
 	if (!message.guild) return;
 	if (!client.application?.owner) await client.application?.fetch();
 
-	if (message.content.toLowerCase() === '!deploy') {
-		deploy(message.guild)
-	}
+	if (message.author.id === '122930489580322818') {
+		if (message.content.toLowerCase() === '!localdeploy') {
+			localDeploy(message.guild)
+		}
 
-	if (message.content.toLowerCase() === '!test') {
+		if (message.content.toLowerCase() === '!globaldeploy') {
+			globalDeploy()
+		}
+	
+		if (message.content.toLowerCase() === '!test') {
+		}
 	}
 });
 
@@ -325,7 +399,6 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 						);
 						subscription.voiceConnection.on('error', console.warn);
 						subscriptions.set(guild.id, subscription);
-						console.log(subscription.radio)
 					}
 
 					if (!subscription) {
