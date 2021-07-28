@@ -189,6 +189,10 @@ client.on('messageCreate', async (message) => {
 			localDeploy(message.guild)
 		}
 
+		if (message.content.toLowerCase() === '!localdelete') {
+			message.guild.commands.set([])
+		}
+
 		if (message.content.toLowerCase() === '!globaldeploy') {
 			globalDeploy()
 		}
