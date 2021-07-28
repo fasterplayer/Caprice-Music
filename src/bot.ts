@@ -15,6 +15,7 @@ import { pauseCommandData, playCommandData, queueCommandData, radioApplicationCo
 import { getFeed, radioList } from './imports/radiolist';
 import { Commands, Country } from './imports/class';
 import ytpl from 'ytpl';
+import ytsr from 'ytsr';
 
 export const client: Discord.Client<boolean> = new Discord.Client({
 	intents: [
@@ -234,14 +235,20 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 	if (interaction.commandName === Commands.Play) {
 		await interaction.defer();
 		// Extract the video URL from the command
-		const url = interaction.options.get('song')!.value! as string;
+		let url = interaction.options.get('song')!.value! as string;
 		const ytbLink: boolean = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?‌​[\w\?‌​=]*)?/.test(url)
 	    const playlistReg: boolean = /^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/.test(url)
 
 
 		if (!ytbLink && !playlistReg) {
-			await interaction.followUp(musicLinkError(guild.id));
-			return;
+			const search: any = await ytsr(url, {limit: 1})
+			
+			if (!search.items[0]) {
+				await interaction.followUp(musicLinkError(guild.id));
+				return;
+			} else {
+				url = search.items[0].url
+			}
 		}
 
 		// If a connection to the guild doesn't already exist and the user is in a voice channel, join that channel
@@ -288,7 +295,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 
 				if (items.length) {
 					items.forEach(async item => {
-						const track = await Track.from(item.url, {
+						const track = await Track.from(item.shortUrl, {
 							onStart() {
 								// interaction.followUp({ content: currentlyPlaying(guild.id), ephemeral: true }).catch(console.warn);
 							},

@@ -57,6 +57,7 @@ export function playlistAddedToQueue(guildID: Snowflake, playlist: ytpl.Result):
     const embed = new MessageEmbed()
     .setAuthor(playlist.author.name, playlist.author.bestAvatar.url ? playlist.author.bestAvatar.url : undefined, playlist.author.url)
     .setURL(playlist.url)
+    .setColor('RED')
 
     if (playlist.bestThumbnail.url) embed.setThumbnail(playlist.bestThumbnail.url)
 
@@ -126,9 +127,9 @@ export function playSong(guildID: Snowflake | undefined = undefined): string {
 
 export function songLink(guildID: Snowflake | undefined = undefined): string {
     if (isEnglish(guildID)) {
-        return 'The youtube URL of the song to play'
+        return 'The youtube URL of the song or playlist to play. You can also type the name of the song.'
     }
-    else return `Le lien youtube de la chanson`
+    else return `Le lien youtube de la chanson ou la playlist. Vous pouvez aussi isncrire le nom de la chanson.`
 }
 
 export function skip(guildID: Snowflake | undefined = undefined): string {

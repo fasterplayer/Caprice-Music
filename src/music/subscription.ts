@@ -88,6 +88,7 @@ export class MusicSubscription {
 
 		// Configure audio player
 		this.audioPlayer.on('stateChange', (oldState, newState) => {
+
 			if (newState.status === AudioPlayerStatus.Idle && oldState.status !== AudioPlayerStatus.Idle) {
 				// If the Idle state is entered from a non-Idle state, it means that an audio resource has finished playing.
 				// The queue is then processed to start playing the next track, if one is available.
