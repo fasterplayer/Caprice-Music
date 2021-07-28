@@ -16,7 +16,7 @@ export function sendError(errorType: string, clientUser: User | null, err: Error
 
     embed
     .setTitle(errorType)
-    .setAuthor(clientUser.username, avatarURL)
+    .setAuthor(clientUser.username + ' (Music)', avatarURL)
     .setDescription(`\`\`\`ts
 ${(err.stack && err.stack.length > 2000) ? err.stack.substring(0, 2000):  err.stack ? err.stack : err.message}\`\`\``)
     .setFooter(err.message)
@@ -69,7 +69,7 @@ export function sendRateLimits(errorName: string, clientUser: User | null, limit
 
     embed
     .setTitle(errorName)
-    .setAuthor(clientUser.username, avatarURL)
+    .setAuthor(clientUser.username + ' (Music)', avatarURL)
     .setDescription(`Global: ${limit.global}
     Limit: ${limit.limit}
     Method: ${limit.method}
@@ -95,7 +95,7 @@ export function sendPromiseError(clientUser: User | null, reason: string | undef
 
     embed
     .setTitle(`Promise Error`)
-    .setAuthor(clientUser.username, avatarURL)
+    .setAuthor(clientUser.username + ' (Music)', avatarURL)
     .setDescription(`\`\`\`ts
     ${promise}\`\`\``)
     .setFooter(reason ? reason : 'No reason')
