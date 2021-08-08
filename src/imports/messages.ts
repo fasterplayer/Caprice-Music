@@ -225,8 +225,8 @@ export function radiosListByCountry(guildID: Snowflake, feedsList: LiveFeed[], c
 
 
 export function radioStationSubCommandName(guildID: Snowflake | undefined = undefined): string {
-    if (isEnglish(guildID)) return `station`
-    else return `station`
+    // if (isEnglish(guildID)) return `station`
+    return `station`
 }
 
 export function radioStationSubCommandDescription(guildID: Snowflake | undefined = undefined): string {
@@ -240,13 +240,13 @@ export function radioStationSubCommandOptionName(guildID: Snowflake | undefined 
 }
 
 export function radioListSubCommandName(guildID: Snowflake | undefined = undefined): string {
-    if (isEnglish(guildID)) return `list`
-    else return `liste`
+    // if (isEnglish(guildID)) return `list`
+    return `liste`
 }
 
 export function radioInfoSubCommandName(guildID: Snowflake | undefined = undefined): string {
-    if (isEnglish(guildID)) return `stationinfo`
-    else return `infostation`
+    // if (isEnglish(guildID)) return `stationinfo`
+    return `infostation`
 }
 
 export function radioListSubCommandDescription(guildID: Snowflake | undefined = undefined): string {
@@ -260,8 +260,8 @@ export function radioInfoSubCommandDescription(guildID: Snowflake | undefined = 
 }
 
 export function radioListSubCommandCountryChoicesName(guildID: Snowflake | undefined = undefined): string {
-    if (isEnglish(guildID)) return `country`
-    else return `pays`
+    // if (isEnglish(guildID)) return `country`
+    return `pays`
 }
 
 export function radioListSubCommandCountryChoicesDescription(guildID: Snowflake | undefined = undefined): string {
@@ -277,8 +277,8 @@ export function radioListCountryName(guildID: Snowflake | undefined = undefined,
     }
 
     if (country === Country.US) {
-        if (isEnglish(guildID)) return 'United-States'
-        else return 'États-Unis'
+        // if (isEnglish(guildID)) return 'United-States'
+        return 'États-Unis'
     }
 
     if (country === Country.FR) {

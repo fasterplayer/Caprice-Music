@@ -1,8 +1,8 @@
-import { Message, Guild, GuildMember, MessageEmbed } from "discord.js"
+import { Guild, GuildMember, MessageEmbed } from "discord.js"
 import fs from 'fs'
 import path from "path"
 import { Country, LiveFeed } from "./class"
-import { noRadioCountryFound, radiosListByCountry } from "./messages"
+import { radiosListByCountry } from "./messages"
 
 
 

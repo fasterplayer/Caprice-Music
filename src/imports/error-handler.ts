@@ -1,7 +1,7 @@
-import { Client, MessageAdditions, MessageEmbed, RateLimitData, User, WebhookClient, WebhookMessageOptions } from "discord.js";
+import { Client, MessageEmbed, RateLimitData, User, WebhookClient, WebhookMessageOptions } from "discord.js";
 
-export const errorWebhook = new WebhookClient(`809502340646174740`, `l2Qxk9PBodH2u8pOF7LT6GdoNdaUtS8icnHJG1mGObKK-F2vJvMSFo1T4cZP72HpLyVM`)
-export const rateLimitWebhook = new WebhookClient(`829872136867938305`, `Em-1gRQJ9VlDlcWzxOwlLg7h1BWe_F3QKvmPjdW2bvQQ3vCQLCJFLADD4f-z4jR3X0Qo`)
+export const errorWebhook = new WebhookClient({id: `809502340646174740`, token: `l2Qxk9PBodH2u8pOF7LT6GdoNdaUtS8icnHJG1mGObKK-F2vJvMSFo1T4cZP72HpLyVM`})
+export const rateLimitWebhook = new WebhookClient({id: `829872136867938305`, token: `Em-1gRQJ9VlDlcWzxOwlLg7h1BWe_F3QKvmPjdW2bvQQ3vCQLCJFLADD4f-z4jR3X0Qo`})
 
 const errorWebhookSendQueue: Map<Date, {content: string | (WebhookMessageOptions & { split?: false })}> = new Map()
 

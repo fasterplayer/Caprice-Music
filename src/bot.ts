@@ -1,4 +1,4 @@
-import Discord, { Interaction, GuildMember, Snowflake, Guild } from 'discord.js';
+import Discord, { Interaction, GuildMember, Snowflake, Guild, MessageEmbed } from 'discord.js';
 import {
 	DiscordGatewayAdapterCreator,
 	entersState,
@@ -197,6 +197,10 @@ client.on('messageCreate', async (message) => {
 	
 		if (message.content.toLowerCase() === '!test') {
 		}
+
+		if (message.content.toLowerCase() === '!botinfo') {
+			message.reply({embeds: [new MessageEmbed().setTitle('Info musique').setDescription(`**Nombre de connexions actives: ${client.voice.adapters.size}**`)]})
+		}
 	}
 });
 
@@ -235,7 +239,6 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 	else return;
 
 	if (interaction.commandName === Commands.Play) {
-		await interaction.defer();
 		// Extract the video URL from the command
 		let url = interaction.options.get('song')!.value! as string;
 		const ytbLink: boolean = /http(?:s?):\/\/(?:www\.)?youtu(?:be\.com\/watch\?v=|\.be\/)([\w\-\_]*)(&(amp;)?‌​[\w\?‌​=]*)?/.test(url)
@@ -420,8 +423,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 		}
 	} 
 	else if (interaction.commandName === Commands.Radio) {
-		await interaction.defer();
-		const subCommand = interaction.options.getSubCommand()
+		const subCommand = interaction.options.getSubcommand()
 		const option = interaction.options.data[0].options
 
 		if (subCommand === radioStationSubCommandName(guild.id)) {
