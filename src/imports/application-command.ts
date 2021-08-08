@@ -1,5 +1,5 @@
 import { ApplicationCommandData, Snowflake } from "discord.js";
-import { Country } from "./class";
+import { Commands, Country } from "./class";
 import { leave, pause, playSong, queue, radio, radioInfoSubCommandDescription, radioInfoSubCommandName, radioListCountryName, radioListSubCommandCountryChoicesDescription, radioListSubCommandCountryChoicesName, radioListSubCommandDescription, radioListSubCommandName, radioStationSubCommandDescription, radioStationSubCommandName, radioStationSubCommandOptionName, resume, skip, songLink } from "./messages";
 
 export function radioApplicationCommandData(guildID: Snowflake | undefined = undefined): ApplicationCommandData {
@@ -112,5 +112,40 @@ export function stopCommandData(guildID: Snowflake | undefined = undefined): App
     return {
         name: 'stop',
         description: leave(guildID),
+    }
+}
+
+export function musicDeployCommandData(): ApplicationCommandData {
+    return {
+        name: Commands.MusicDeploy,
+        description: 'Deploy Music Commands',
+        defaultPermission: false,
+        options: [{
+            name: 'type',
+            description: 'Type of deploy',
+            type: 'STRING',
+            choices: [{
+                name: 'Global',
+                value: 'global'
+            },
+            {
+                name: 'Local',
+                value: 'local'
+            }]
+        }]
+    }
+}
+
+export function botInfoCommandData(): ApplicationCommandData {
+    return {
+        name: Commands.BotInfo,
+        description: 'Get Bot informations',
+        defaultPermission: false,
+        options: [{
+            name: 'music',
+            description: 'Music or not?',
+            type: 'BOOLEAN',
+            required: true
+        }]
     }
 }

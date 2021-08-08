@@ -1,4 +1,4 @@
-import Discord, { Interaction, GuildMember, Snowflake, Guild, MessageEmbed } from 'discord.js';
+import Discord, { Interaction, GuildMember, Snowflake, Guild, MessageEmbed, HexColorString } from 'discord.js';
 import {
 	DiscordGatewayAdapterCreator,
 	entersState,
@@ -11,7 +11,7 @@ import { addedToQueue, alreadyInUse, cantJoinVc, errored, leave, leftChannel, mu
 import settings from './imports/settings';
 import { errorsHandler, sendError, sendInterval } from './imports/error-handler';
 import { audioPossibleCommands, guildCache } from './imports/helpers';
-import { pauseCommandData, playCommandData, queueCommandData, radioApplicationCommandData, resumeCommandData, skipCommandData, stopCommandData } from './imports/application-command';
+import { botInfoCommandData, musicDeployCommandData, pauseCommandData, playCommandData, queueCommandData, radioApplicationCommandData, resumeCommandData, skipCommandData, stopCommandData } from './imports/application-command';
 import { getFeed, radioList } from './imports/radiolist';
 import { Commands, Country } from './imports/class';
 import ytpl from 'ytpl';
@@ -25,7 +25,7 @@ export const client: Discord.Client<boolean> = new Discord.Client({
 
 client.setMaxListeners(0)
 
-client.on('ready', () => {
+client.on('ready', async () => {
 
 	sendInterval(client)
 	errorsHandler(client)
@@ -39,170 +39,45 @@ client.on('ready', () => {
         await guildCache(guild, client)
     })
 
+	const devGuild = client.guilds.cache.get('744929326058700821')
+
+	if (devGuild) {
+		const commands = await devGuild.commands.fetch()
+
+		if (commands) {
+			const deployCommand = commands.find(c => c.name === Commands.MusicDeploy) 
+			if (deployCommand) {
+				deployCommand.edit(musicDeployCommandData())
+				.then(c => {
+					c.permissions.set({permissions: [{id: '122930489580322818', type: 'USER', permission: true}]})
+				})
+			}
+			else {
+				devGuild.commands.create(musicDeployCommandData())
+				.then(c => {
+					c.permissions.set({permissions: [{id: '122930489580322818', type: 'USER', permission: true}]})
+				})
+			}
+			const botInfo = commands.find(c => c.name === Commands.BotInfo) 
+			if (botInfo) {
+				botInfo.edit(botInfoCommandData())
+				.then(c => {
+					c.permissions.set({permissions: [{id: '122930489580322818', type: 'USER', permission: true}]})
+				})
+			}
+			else {
+				devGuild.commands.create(botInfoCommandData())
+				.then(c => {
+					c.permissions.set({permissions: [{id: '122930489580322818', type: 'USER', permission: true}]})
+				})
+			}
+		}
+	}
 })
 
 
-async function localDeploy(guild: Guild) {
-	const commands = await guild.commands.fetch()
+// 			message.reply({embeds: [new MessageEmbed().setTitle('Info musique').setDescription(`**Nombre de connexions actives: ${client.voice.adapters.size}**`)]})
 
-	const playCommand = commands.find(command => command.name === Commands.Play)
-	if (playCommand && playCommand.description !== playSong(guild.id)) {
-		playCommand.edit(playCommandData(guild.id))
-	}
-	else {
-		guild.commands.create(playCommandData(guild.id))
-	}
-
-	const skipCommand = commands.find(command => command.name === Commands.Skip)
-
-	if (skipCommand && skipCommand.description !== skip(guild.id)) {
-		skipCommand.edit(skipCommandData(guild.id))
-	}
-	else {
-		guild.commands.create(skipCommandData(guild.id))
-	}
-
-	const pauseCommand = commands.find(command => command.name === Commands.Pause)
-
-	if (pauseCommand && pauseCommand.description !== pause(guild.id)) {
-		pauseCommand.edit(pauseCommandData(guild.id))
-	}
-	else {
-		guild.commands.create(pauseCommandData(guild.id))
-	}
-
-	const queueCommand = commands.find(command => command.name === Commands.Queue)
-
-	if (queueCommand && queueCommand.description !== queue(guild.id)) {
-		queueCommand.edit(queueCommandData(guild.id))
-	}
-	else {
-		guild.commands.create(queueCommandData(guild.id))
-	}
-
-	const resumeCommand = commands.find(command => command.name === Commands.Resume)
-
-	if (resumeCommand && resumeCommand.description !== resume(guild.id)) {
-		resumeCommand.edit(resumeCommandData(guild.id))
-	}
-	else {
-		guild.commands.create(resumeCommandData(guild.id))
-	}
-
-	const leaveCommand = commands.find(command => command.name === Commands.Stop)
-
-	if (leaveCommand && leaveCommand.description !== leave(guild.id)) {
-		leaveCommand.edit(stopCommandData(guild.id))
-	}
-	else {
-		guild.commands.create(stopCommandData(guild.id))
-	}
-
-	const radioCommand = commands.find(command => command.name === Commands.Radio)
-
-	if (radioCommand && radioCommand.description) {
-		radioCommand.edit(radioApplicationCommandData(guild.id))
-	}
-	else {
-		guild.commands.create(radioApplicationCommandData(guild.id))
-	}
-}
-
-async function globalDeploy() {
-	if (!client.application) return false
-	const commands = await client.application.commands.fetch()
-	const applicationCommands = client.application.commands
-
-	const playCommand = commands.find(command => command.name === Commands.Play)
-	if (playCommand && playCommand.description !== playSong()) {
-		playCommand.edit(playCommandData())
-	}
-	else {
-		applicationCommands.create(playCommandData())
-	}
-
-	const skipCommand = commands.find(command => command.name === Commands.Skip)
-
-	if (skipCommand && skipCommand.description !== skip()) {
-		skipCommand.edit(skipCommandData())
-	}
-	else {
-		applicationCommands.create(skipCommandData())
-	}
-
-	const pauseCommand = commands.find(command => command.name === Commands.Pause)
-
-	if (pauseCommand && pauseCommand.description !== pause()) {
-		pauseCommand.edit(pauseCommandData())
-	}
-	else {
-		applicationCommands.create(pauseCommandData())
-	}
-
-	const queueCommand = commands.find(command => command.name === Commands.Queue)
-
-	if (queueCommand && queueCommand.description !== queue()) {
-		queueCommand.edit(queueCommandData())
-	}
-	else {
-		applicationCommands.create(queueCommandData())
-	}
-
-	const resumeCommand = commands.find(command => command.name === Commands.Resume)
-
-	if (resumeCommand && resumeCommand.description !== resume()) {
-		resumeCommand.edit(resumeCommandData())
-	}
-	else {
-		applicationCommands.create(resumeCommandData())
-	}
-
-	const leaveCommand = commands.find(command => command.name === Commands.Stop)
-
-	if (leaveCommand && leaveCommand.description !== leave()) {
-		leaveCommand.edit(stopCommandData())
-	}
-	else {
-		applicationCommands.create(stopCommandData())
-	}
-
-	const radioCommand = commands.find(command => command.name === Commands.Radio)
-
-	if (radioCommand && radioCommand.description) {
-		radioCommand.edit(radioApplicationCommandData())
-	}
-	else {
-		applicationCommands.create(radioApplicationCommandData())
-	}
-}
-
-
-// This contains the setup code for creating slash commands in a guild. The owner of the bot can send "!deploy" to create them.
-client.on('messageCreate', async (message) => {
-	if (!message.guild) return;
-	if (!client.application?.owner) await client.application?.fetch();
-
-	if (message.author.id === '122930489580322818') {
-		if (message.content.toLowerCase() === '!localdeploy') {
-			localDeploy(message.guild)
-		}
-
-		if (message.content.toLowerCase() === '!localdelete') {
-			message.guild.commands.set([])
-		}
-
-		if (message.content.toLowerCase() === '!globaldeploy') {
-			globalDeploy()
-		}
-	
-		if (message.content.toLowerCase() === '!test') {
-		}
-
-		if (message.content.toLowerCase() === '!botinfo') {
-			message.reply({embeds: [new MessageEmbed().setTitle('Info musique').setDescription(`**Nombre de connexions actives: ${client.voice.adapters.size}**`)]})
-		}
-	}
-});
 
 /**
  * Maps guild IDs to music subscriptions, which exist if the bot has an active VoiceConnection to the guild.
@@ -214,18 +89,54 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 	const guild = interaction.guild
 	if (!(guild instanceof Guild)) return
 
+	if (guild.id !== '744929326058700821') return;
+
 	const member = interaction.member
-	if (!(member instanceof GuildMember)) return
+	if (!(member instanceof GuildMember)) return;
 
 	const botMember = guild.me
-	if (!(botMember instanceof GuildMember)) return
+	if (!(botMember instanceof GuildMember)) return;
 
 	const channel = member.voice.channel;
 
 	if (!interaction.isCommand()) return;
 	let subscription: MusicSubscription | undefined = subscriptions.get(guild.id);
 
+	if (interaction.commandName === Commands.MusicDeploy) {
+		const option = interaction.options.data[0].value
+		if (option && option === 'local') {
+			localDeploy(guild)
+		}
+		else if (option && option === 'global') {
+			globalDeploy()
+		}
+		interaction.reply(`Déploiement ${option} en cours!`)
+		return;
+	}
+
+	if (interaction.commandName === Commands.BotInfo) {
+		const bool = interaction.options.getBoolean('music')
+		if (bool) {
+			const embed = new MessageEmbed()
+			.setAuthor(client.user ? client.user.tag : 'Caprice Bot Music', client.user?.displayAvatarURL({dynamic: true}))
+			.setTitle(`Statistiques Music`)
+			.setColor('2aff00' as HexColorString)
+			.addField(`Serveurs`, client.guilds.cache.size.toString(), true)
+			.addField(`Users`, client.users.cache.size.toString(), true)
+			.addField(`Uptime`, client.uptime ? (client.uptime / 60000).toFixed() + ` Minutes` : `undefined`, true)
+			.addField(`Shards`, client.shard ? client.shard.count.toString() : 'Aucun', true)
+			.addField(`Vocaux`, client.voice.adapters.size.toString(), true)
+			.addField(`Interaction Version`, interaction.version.toString(), true)
+			.setTimestamp(new Date())
+			.setFooter(`🏓Latency is ${Date.now() - interaction.createdTimestamp}ms. API Latency is ${Math.round(client.ws.ping)}ms`)
+
+			interaction.reply({embeds: [embed], ephemeral: true})
+			return;
+		}
+	}
+
 	if (audioPossibleCommands(interaction.commandName as Commands)) {
+		interaction.deferReply()
 		if (subscription) {
 			const botChannel = botMember.voice.channel
 			if (botChannel) {
@@ -501,6 +412,140 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 		return;
 	}
 });
+
+async function localDeploy(guild: Guild) {
+	const commands = await guild.commands.fetch()
+
+	const playCommand = commands.find(command => command.name === Commands.Play)
+	if (playCommand && playCommand.description !== playSong(guild.id)) {
+		playCommand.edit(playCommandData(guild.id))
+	}
+	else {
+		guild.commands.create(playCommandData(guild.id))
+	}
+
+	const skipCommand = commands.find(command => command.name === Commands.Skip)
+
+	if (skipCommand && skipCommand.description !== skip(guild.id)) {
+		skipCommand.edit(skipCommandData(guild.id))
+	}
+	else {
+		guild.commands.create(skipCommandData(guild.id))
+	}
+
+	const pauseCommand = commands.find(command => command.name === Commands.Pause)
+
+	if (pauseCommand && pauseCommand.description !== pause(guild.id)) {
+		pauseCommand.edit(pauseCommandData(guild.id))
+	}
+	else {
+		guild.commands.create(pauseCommandData(guild.id))
+	}
+
+	const queueCommand = commands.find(command => command.name === Commands.Queue)
+
+	if (queueCommand && queueCommand.description !== queue(guild.id)) {
+		queueCommand.edit(queueCommandData(guild.id))
+	}
+	else {
+		guild.commands.create(queueCommandData(guild.id))
+	}
+
+	const resumeCommand = commands.find(command => command.name === Commands.Resume)
+
+	if (resumeCommand && resumeCommand.description !== resume(guild.id)) {
+		resumeCommand.edit(resumeCommandData(guild.id))
+	}
+	else {
+		guild.commands.create(resumeCommandData(guild.id))
+	}
+
+	const leaveCommand = commands.find(command => command.name === Commands.Stop)
+
+	if (leaveCommand && leaveCommand.description !== leave(guild.id)) {
+		leaveCommand.edit(stopCommandData(guild.id))
+	}
+	else {
+		guild.commands.create(stopCommandData(guild.id))
+	}
+
+	const radioCommand = commands.find(command => command.name === Commands.Radio)
+
+	if (radioCommand && radioCommand.description) {
+		radioCommand.edit(radioApplicationCommandData(guild.id))
+	}
+	else {
+		guild.commands.create(radioApplicationCommandData(guild.id))
+	}
+}
+
+async function globalDeploy() {
+	if (!client.application) return false
+	const commands = await client.application.commands.fetch()
+	const applicationCommands = client.application.commands
+
+	const playCommand = commands.find(command => command.name === Commands.Play)
+	if (playCommand && playCommand.description !== playSong()) {
+		playCommand.edit(playCommandData())
+	}
+	else {
+		applicationCommands.create(playCommandData())
+	}
+
+	const skipCommand = commands.find(command => command.name === Commands.Skip)
+
+	if (skipCommand && skipCommand.description !== skip()) {
+		skipCommand.edit(skipCommandData())
+	}
+	else {
+		applicationCommands.create(skipCommandData())
+	}
+
+	const pauseCommand = commands.find(command => command.name === Commands.Pause)
+
+	if (pauseCommand && pauseCommand.description !== pause()) {
+		pauseCommand.edit(pauseCommandData())
+	}
+	else {
+		applicationCommands.create(pauseCommandData())
+	}
+
+	const queueCommand = commands.find(command => command.name === Commands.Queue)
+
+	if (queueCommand && queueCommand.description !== queue()) {
+		queueCommand.edit(queueCommandData())
+	}
+	else {
+		applicationCommands.create(queueCommandData())
+	}
+
+	const resumeCommand = commands.find(command => command.name === Commands.Resume)
+
+	if (resumeCommand && resumeCommand.description !== resume()) {
+		resumeCommand.edit(resumeCommandData())
+	}
+	else {
+		applicationCommands.create(resumeCommandData())
+	}
+
+	const leaveCommand = commands.find(command => command.name === Commands.Stop)
+
+	if (leaveCommand && leaveCommand.description !== leave()) {
+		leaveCommand.edit(stopCommandData())
+	}
+	else {
+		applicationCommands.create(stopCommandData())
+	}
+
+	const radioCommand = commands.find(command => command.name === Commands.Radio)
+
+	if (radioCommand && radioCommand.description) {
+		radioCommand.edit(radioApplicationCommandData())
+	}
+	else {
+		applicationCommands.create(radioApplicationCommandData())
+	}
+}
 
 client.on('error', console.warn);
 

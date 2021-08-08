@@ -114,5 +114,7 @@ export enum Commands {
     Stop = 'stop',
     Radio = 'radio',
     Queue = 'queue',
-    Resume = 'resume'
+    Resume = 'resume',
+    MusicDeploy = 'musicdeploy',
+    BotInfo = 'botinfo'
 }
