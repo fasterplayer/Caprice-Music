@@ -89,8 +89,6 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 	const guild = interaction.guild
 	if (!(guild instanceof Guild)) return
 
-	if (guild.id !== '744929326058700821') return;
-
 	const member = interaction.member
 	if (!(member instanceof GuildMember)) return;
 
