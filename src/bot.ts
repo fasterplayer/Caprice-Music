@@ -345,7 +345,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 						try {
 							subscription.audioPlayer.stop()
 							subscriptions.delete(guild.id)
-							await interaction.followUp(playingRadioStation(guild.id, feed.name));
+							// await interaction.followUp(playingRadioStation(guild.id, feed.name));
 							subscription.radio = true
 						} catch (error) {
 							console.warn(error);
