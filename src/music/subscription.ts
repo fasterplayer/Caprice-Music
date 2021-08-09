@@ -46,8 +46,10 @@ export class MusicSubscription {
 						await entersState(this.voiceConnection, VoiceConnectionStatus.Connecting, 5_000);
 						// Probably moved voice channel
 					} catch {
-						this.voiceConnection.destroy();
-						// Probably removed from voice channel
+						if (this.voiceConnection.state.status  !== VoiceConnectionStatus.Destroyed) {
+							this.voiceConnection.destroy();
+							// Probably removed from voice channel
+						}
 					}
 				} else if (this.voiceConnection.rejoinAttempts < 5) {
 					/*
@@ -59,7 +61,9 @@ export class MusicSubscription {
 					/*
 						The disconnect in this case may be recoverable, but we have no more remaining attempts - destroy.
 					*/
-					this.voiceConnection.destroy();
+					if (this.voiceConnection.state.status !== VoiceConnectionStatus.Destroyed) {
+						this.voiceConnection.destroy();
+					}
 				}
 			} else if (newState.status === VoiceConnectionStatus.Destroyed) {
 				/*
@@ -79,7 +83,9 @@ export class MusicSubscription {
 				try {
 					await entersState(this.voiceConnection, VoiceConnectionStatus.Ready, 20_000);
 				} catch {
-					if (this.voiceConnection.state.status !== VoiceConnectionStatus.Destroyed) this.voiceConnection.destroy();
+					if (this.voiceConnection.state.status !== VoiceConnectionStatus.Destroyed){
+						 this.voiceConnection.destroy();
+					}
 				} finally {
 					this.readyLock = false;
 				}

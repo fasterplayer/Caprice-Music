@@ -324,7 +324,9 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 		}
 	} else if (interaction.commandName === Commands.Stop) {
 		if (subscription) {
-			subscription.voiceConnection.destroy();
+			if (subscription.voiceConnection.state.status !== VoiceConnectionStatus.Destroyed) {
+				subscription.voiceConnection.destroy();
+			}
 			subscriptions.delete(guild.id);
 			await interaction.reply({ content: leftChannel(guild.id), ephemeral: true });
 		} else {
