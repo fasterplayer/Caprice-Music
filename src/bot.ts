@@ -108,7 +108,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 		else if (option && option === 'global') {
 			globalDeploy()
 		}
-		interaction.reply(`Déploiement ${option} en cours!`)
+		interaction.followUp(`Déploiement ${option} en cours!`)
 		return;
 	}
 
@@ -128,7 +128,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 			.setTimestamp(new Date())
 			.setFooter(`🏓Latency is ${Date.now() - interaction.createdTimestamp}ms. API Latency is ${Math.round(client.ws.ping)}ms`)
 
-			interaction.reply({embeds: [embed], ephemeral: true})
+			interaction.followUp({embeds: [embed], ephemeral: true})
 			return;
 		}
 	}
@@ -139,7 +139,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 			const botChannel = botMember.voice.channel
 			if (botChannel) {
 				if (botChannel.members.size > 1 && botChannel !== channel) {
-					interaction.reply({content: alreadyInUse(guild.id, botChannel), ephemeral: true})
+					interaction.followUp({content: alreadyInUse(guild.id, botChannel), ephemeral: true})
 					return;
 				}
 			}
@@ -268,7 +268,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 
 		if (subscription) {
 			if (subscription.radio) {
-				await interaction.reply(noSkipRadio(guild.id));
+				await interaction.followUp(noSkipRadio(guild.id));
 				return;
 			}
 
@@ -276,12 +276,12 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 			// listener defined in music/subscription.ts, transitions into the Idle state mean the next track from the queue
 			// will be loaded and played.
 			subscription.audioPlayer.stop();
-			await interaction.reply(songSkipped(guild.id));
+			await interaction.followUp(songSkipped(guild.id));
 
 
 
 		} else {
-			await interaction.reply(notPlaying(guild.id));
+			await interaction.followUp(notPlaying(guild.id));
 		}
 	} else if (interaction.commandName === Commands.Queue) {
 		// Print out the current queue, including up to the next 5 tracks to be played.
@@ -296,31 +296,31 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 			// 	.map((track, index) => `${index + 1}- ${track.title}`)
 			// 	.join('\n');
 
-			// await interaction.reply(`${current}\n\n${queue}`);
-			await interaction.reply({embeds: [songQueue(subscription.queue, guild.id)]});
+			// await interaction.followUp(`${current}\n\n${queue}`);
+			await interaction.followUp({embeds: [songQueue(subscription.queue, guild.id)]});
 		} else {
-			await interaction.reply(notPlaying(guild.id));
+			await interaction.followUp(notPlaying(guild.id));
 		}
 	} else if (interaction.commandName === Commands.Pause) {
 		if (subscription) {
 
 			if (subscription.radio) {
-				await interaction.reply(noPauseRadio(guild.id));
+				await interaction.followUp(noPauseRadio(guild.id));
 				return;
 			}
 
 
 			subscription.audioPlayer.pause();
-			await interaction.reply({ content: paused(guild.id), ephemeral: true });
+			await interaction.followUp({ content: paused(guild.id), ephemeral: true });
 		} else {
-			await interaction.reply(notPlaying(guild.id));
+			await interaction.followUp(notPlaying(guild.id));
 		}
 	} else if (interaction.commandName === Commands.Resume) {
 		if (subscription) {
 			subscription.audioPlayer.unpause();
-			await interaction.reply({ content: unpaused(guild.id), ephemeral: true });
+			await interaction.followUp({ content: unpaused(guild.id), ephemeral: true });
 		} else {
-			await interaction.reply(notPlaying(guild.id));
+			await interaction.followUp(notPlaying(guild.id));
 		}
 	} else if (interaction.commandName === Commands.Stop) {
 		if (subscription) {
@@ -328,9 +328,9 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 				subscription.voiceConnection.destroy();
 			}
 			subscriptions.delete(guild.id);
-			await interaction.reply({ content: leftChannel(guild.id), ephemeral: true });
+			await interaction.followUp({ content: leftChannel(guild.id), ephemeral: true });
 		} else {
-			await interaction.reply(notPlaying(guild.id));
+			await interaction.followUp(notPlaying(guild.id));
 		}
 	} 
 	else if (interaction.commandName === Commands.Radio) {
