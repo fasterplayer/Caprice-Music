@@ -135,17 +135,3 @@ export function musicDeployCommandData(): ApplicationCommandData {
         }]
     }
 }
-
-export function botInfoCommandData(): ApplicationCommandData {
-    return {
-        name: Commands.BotInfo,
-        description: 'Get Bot informations',
-        defaultPermission: false,
-        options: [{
-            name: 'music',
-            description: 'Music or not?',
-            type: 'BOOLEAN',
-            required: true
-        }]
-    }
-}

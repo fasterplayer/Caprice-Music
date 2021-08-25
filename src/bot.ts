@@ -11,7 +11,7 @@ import { addedToQueue, alreadyInUse, cantJoinVc, errored, leave, leftChannel, mu
 import settings from './imports/settings';
 import { errorsHandler, sendError, sendInterval } from './imports/error-handler';
 import { audioPossibleCommands, guildCache } from './imports/helpers';
-import { botInfoCommandData, musicDeployCommandData, pauseCommandData, playCommandData, queueCommandData, radioApplicationCommandData, resumeCommandData, skipCommandData, stopCommandData } from './imports/application-command';
+import { musicDeployCommandData, pauseCommandData, playCommandData, queueCommandData, radioApplicationCommandData, resumeCommandData, skipCommandData, stopCommandData } from './imports/application-command';
 import { getFeed, radioList } from './imports/radiolist';
 import { Commands, Country } from './imports/class';
 import ytpl from 'ytpl';
@@ -54,19 +54,6 @@ client.on('ready', async () => {
 			}
 			else {
 				devGuild.commands.create(musicDeployCommandData())
-				.then(c => {
-					c.permissions.set({permissions: [{id: '122930489580322818', type: 'USER', permission: true}]})
-				})
-			}
-			const botInfo = commands.find(c => c.name === Commands.BotInfo) 
-			if (botInfo) {
-				botInfo.edit(botInfoCommandData())
-				.then(c => {
-					c.permissions.set({permissions: [{id: '122930489580322818', type: 'USER', permission: true}]})
-				})
-			}
-			else {
-				devGuild.commands.create(botInfoCommandData())
 				.then(c => {
 					c.permissions.set({permissions: [{id: '122930489580322818', type: 'USER', permission: true}]})
 				})
