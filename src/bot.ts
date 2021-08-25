@@ -11,7 +11,7 @@ import { addedToQueue, alreadyInUse, cantJoinVc, errored, leave, leftChannel, mu
 import settings from './imports/settings';
 import { errorsHandler, sendError, sendInterval } from './imports/error-handler';
 import { audioPossibleCommands, guildCache } from './imports/helpers';
-import { musicDeployCommandData, pauseCommandData, playCommandData, queueCommandData, radioApplicationCommandData, resumeCommandData, skipCommandData, stopCommandData } from './imports/application-command';
+// import { musicDeployCommandData, pauseCommandData, playCommandData, queueCommandData, radioApplicationCommandData, resumeCommandData, skipCommandData, stopCommandData } from './imports/application-command';
 import { getFeed, radioList } from './imports/radiolist';
 import { Commands, Country } from './imports/class';
 import ytpl from 'ytpl';
@@ -39,27 +39,27 @@ client.on('ready', async () => {
         await guildCache(guild, client)
     })
 
-	const devGuild = client.guilds.cache.get('744929326058700821')
+	// const devGuild = client.guilds.cache.get('744929326058700821')
 
-	if (devGuild) {
-		const commands = await devGuild.commands.fetch()
+	// if (devGuild) {
+	// 	const commands = await devGuild.commands.fetch()
 
-		if (commands) {
-			const deployCommand = commands.find(c => c.name === Commands.MusicDeploy) 
-			if (deployCommand) {
-				deployCommand.edit(musicDeployCommandData())
-				.then(c => {
-					c.permissions.set({permissions: [{id: '122930489580322818', type: 'USER', permission: true}]})
-				})
-			}
-			else {
-				devGuild.commands.create(musicDeployCommandData())
-				.then(c => {
-					c.permissions.set({permissions: [{id: '122930489580322818', type: 'USER', permission: true}]})
-				})
-			}
-		}
-	}
+	// 	if (commands) {
+	// 		const deployCommand = commands.find(c => c.name === Commands.MusicDeploy) 
+	// 		if (deployCommand) {
+	// 			deployCommand.edit(musicDeployCommandData())
+	// 			.then(c => {
+	// 				c.permissions.set({permissions: [{id: '122930489580322818', type: 'USER', permission: true}]})
+	// 			})
+	// 		}
+	// 		else {
+	// 			devGuild.commands.create(musicDeployCommandData())
+	// 			.then(c => {
+	// 				c.permissions.set({permissions: [{id: '122930489580322818', type: 'USER', permission: true}]})
+	// 			})
+	// 		}
+	// 	}
+	// }
 })
 
 
@@ -87,21 +87,20 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 	if (!interaction.isCommand()) return;
 	let subscription: MusicSubscription | undefined = subscriptions.get(guild.id);
 
-	if (interaction.commandName === Commands.MusicDeploy) {
-		const option = interaction.options.data[0].value
-		if (option && option === 'local') {
-			localDeploy(guild)
-		}
-		else if (option && option === 'global') {
-			globalDeploy()
-		}
-		interaction.followUp(`Déploiement ${option} en cours!`)
-		return;
-	}
+	// if (interaction.commandName === Commands.MusicDeploy) {
+	// 	const option = interaction.options.data[0].value
+	// 	if (option && option === 'local') {
+	// 		localDeploy(guild)
+	// 	}
+	// 	else if (option && option === 'global') {
+	// 		globalDeploy()
+	// 	}
+	// 	interaction.followUp(`Déploiement ${option} en cours!`)
+	// 	return;
+	// }
 
 	if (interaction.commandName === Commands.BotInfo) {
-		const bool = interaction.options.getBoolean('music')
-		if (bool) {
+		if (interaction.options.getBoolean('music', true)) {
 			const embed = new MessageEmbed()
 			.setAuthor(client.user ? client.user.tag : 'Caprice Bot Music', client.user?.displayAvatarURL({dynamic: true}))
 			.setTitle(`Statistiques Music`)
@@ -115,7 +114,7 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 			.setTimestamp(new Date())
 			.setFooter(`🏓Latency is ${Date.now() - interaction.createdTimestamp}ms. API Latency is ${Math.round(client.ws.ping)}ms`)
 
-			interaction.followUp({embeds: [embed], ephemeral: true})
+			interaction.reply({embeds: [embed], ephemeral: true})
 			return;
 		}
 	}
@@ -400,139 +399,139 @@ client.on('interactionCreate', async (interaction: Interaction) => {
 	}
 });
 
-async function localDeploy(guild: Guild) {
-	const commands = await guild.commands.fetch()
+// async function localDeploy(guild: Guild) {
+// 	const commands = await guild.commands.fetch()
 
-	const playCommand = commands.find(command => command.name === Commands.Play)
-	if (playCommand && playCommand.description !== playSong(guild.id)) {
-		playCommand.edit(playCommandData(guild.id))
-	}
-	else {
-		guild.commands.create(playCommandData(guild.id))
-	}
+// 	const playCommand = commands.find(command => command.name === Commands.Play)
+// 	if (playCommand && playCommand.description !== playSong(guild.id)) {
+// 		playCommand.edit(playCommandData(guild.id))
+// 	}
+// 	else {
+// 		guild.commands.create(playCommandData(guild.id))
+// 	}
 
-	const skipCommand = commands.find(command => command.name === Commands.Skip)
+// 	const skipCommand = commands.find(command => command.name === Commands.Skip)
 
-	if (skipCommand && skipCommand.description !== skip(guild.id)) {
-		skipCommand.edit(skipCommandData(guild.id))
-	}
-	else {
-		guild.commands.create(skipCommandData(guild.id))
-	}
+// 	if (skipCommand && skipCommand.description !== skip(guild.id)) {
+// 		skipCommand.edit(skipCommandData(guild.id))
+// 	}
+// 	else {
+// 		guild.commands.create(skipCommandData(guild.id))
+// 	}
 
-	const pauseCommand = commands.find(command => command.name === Commands.Pause)
+// 	const pauseCommand = commands.find(command => command.name === Commands.Pause)
 
-	if (pauseCommand && pauseCommand.description !== pause(guild.id)) {
-		pauseCommand.edit(pauseCommandData(guild.id))
-	}
-	else {
-		guild.commands.create(pauseCommandData(guild.id))
-	}
+// 	if (pauseCommand && pauseCommand.description !== pause(guild.id)) {
+// 		pauseCommand.edit(pauseCommandData(guild.id))
+// 	}
+// 	else {
+// 		guild.commands.create(pauseCommandData(guild.id))
+// 	}
 
-	const queueCommand = commands.find(command => command.name === Commands.Queue)
+// 	const queueCommand = commands.find(command => command.name === Commands.Queue)
 
-	if (queueCommand && queueCommand.description !== queue(guild.id)) {
-		queueCommand.edit(queueCommandData(guild.id))
-	}
-	else {
-		guild.commands.create(queueCommandData(guild.id))
-	}
+// 	if (queueCommand && queueCommand.description !== queue(guild.id)) {
+// 		queueCommand.edit(queueCommandData(guild.id))
+// 	}
+// 	else {
+// 		guild.commands.create(queueCommandData(guild.id))
+// 	}
 
-	const resumeCommand = commands.find(command => command.name === Commands.Resume)
+// 	const resumeCommand = commands.find(command => command.name === Commands.Resume)
 
-	if (resumeCommand && resumeCommand.description !== resume(guild.id)) {
-		resumeCommand.edit(resumeCommandData(guild.id))
-	}
-	else {
-		guild.commands.create(resumeCommandData(guild.id))
-	}
+// 	if (resumeCommand && resumeCommand.description !== resume(guild.id)) {
+// 		resumeCommand.edit(resumeCommandData(guild.id))
+// 	}
+// 	else {
+// 		guild.commands.create(resumeCommandData(guild.id))
+// 	}
 
-	const leaveCommand = commands.find(command => command.name === Commands.Stop)
+// 	const leaveCommand = commands.find(command => command.name === Commands.Stop)
 
-	if (leaveCommand && leaveCommand.description !== leave(guild.id)) {
-		leaveCommand.edit(stopCommandData(guild.id))
-	}
-	else {
-		guild.commands.create(stopCommandData(guild.id))
-	}
+// 	if (leaveCommand && leaveCommand.description !== leave(guild.id)) {
+// 		leaveCommand.edit(stopCommandData(guild.id))
+// 	}
+// 	else {
+// 		guild.commands.create(stopCommandData(guild.id))
+// 	}
 
-	const radioCommand = commands.find(command => command.name === Commands.Radio)
+// 	const radioCommand = commands.find(command => command.name === Commands.Radio)
 
-	if (radioCommand && radioCommand.description) {
-		radioCommand.edit(radioApplicationCommandData(guild.id))
-	}
-	else {
-		guild.commands.create(radioApplicationCommandData(guild.id))
-	}
-}
+// 	if (radioCommand && radioCommand.description) {
+// 		radioCommand.edit(radioApplicationCommandData(guild.id))
+// 	}
+// 	else {
+// 		guild.commands.create(radioApplicationCommandData(guild.id))
+// 	}
+// }
 
-async function globalDeploy() {
-	if (!client.application) return false
-	const commands = await client.application.commands.fetch()
-	const applicationCommands = client.application.commands
+// async function globalDeploy() {
+// 	if (!client.application) return false
+// 	const commands = await client.application.commands.fetch()
+// 	const applicationCommands = client.application.commands
 
-	const playCommand = commands.find(command => command.name === Commands.Play)
-	if (playCommand && playCommand.description !== playSong()) {
-		playCommand.edit(playCommandData())
-	}
-	else {
-		applicationCommands.create(playCommandData())
-	}
+// 	const playCommand = commands.find(command => command.name === Commands.Play)
+// 	if (playCommand && playCommand.description !== playSong()) {
+// 		playCommand.edit(playCommandData())
+// 	}
+// 	else {
+// 		applicationCommands.create(playCommandData())
+// 	}
 
-	const skipCommand = commands.find(command => command.name === Commands.Skip)
+// 	const skipCommand = commands.find(command => command.name === Commands.Skip)
 
-	if (skipCommand && skipCommand.description !== skip()) {
-		skipCommand.edit(skipCommandData())
-	}
-	else {
-		applicationCommands.create(skipCommandData())
-	}
+// 	if (skipCommand && skipCommand.description !== skip()) {
+// 		skipCommand.edit(skipCommandData())
+// 	}
+// 	else {
+// 		applicationCommands.create(skipCommandData())
+// 	}
 
-	const pauseCommand = commands.find(command => command.name === Commands.Pause)
+// 	const pauseCommand = commands.find(command => command.name === Commands.Pause)
 
-	if (pauseCommand && pauseCommand.description !== pause()) {
-		pauseCommand.edit(pauseCommandData())
-	}
-	else {
-		applicationCommands.create(pauseCommandData())
-	}
+// 	if (pauseCommand && pauseCommand.description !== pause()) {
+// 		pauseCommand.edit(pauseCommandData())
+// 	}
+// 	else {
+// 		applicationCommands.create(pauseCommandData())
+// 	}
 
-	const queueCommand = commands.find(command => command.name === Commands.Queue)
+// 	const queueCommand = commands.find(command => command.name === Commands.Queue)
 
-	if (queueCommand && queueCommand.description !== queue()) {
-		queueCommand.edit(queueCommandData())
-	}
-	else {
-		applicationCommands.create(queueCommandData())
-	}
+// 	if (queueCommand && queueCommand.description !== queue()) {
+// 		queueCommand.edit(queueCommandData())
+// 	}
+// 	else {
+// 		applicationCommands.create(queueCommandData())
+// 	}
 
-	const resumeCommand = commands.find(command => command.name === Commands.Resume)
+// 	const resumeCommand = commands.find(command => command.name === Commands.Resume)
 
-	if (resumeCommand && resumeCommand.description !== resume()) {
-		resumeCommand.edit(resumeCommandData())
-	}
-	else {
-		applicationCommands.create(resumeCommandData())
-	}
+// 	if (resumeCommand && resumeCommand.description !== resume()) {
+// 		resumeCommand.edit(resumeCommandData())
+// 	}
+// 	else {
+// 		applicationCommands.create(resumeCommandData())
+// 	}
 
-	const leaveCommand = commands.find(command => command.name === Commands.Stop)
+// 	const leaveCommand = commands.find(command => command.name === Commands.Stop)
 
-	if (leaveCommand && leaveCommand.description !== leave()) {
-		leaveCommand.edit(stopCommandData())
-	}
-	else {
-		applicationCommands.create(stopCommandData())
-	}
+// 	if (leaveCommand && leaveCommand.description !== leave()) {
+// 		leaveCommand.edit(stopCommandData())
+// 	}
+// 	else {
+// 		applicationCommands.create(stopCommandData())
+// 	}
 
-	const radioCommand = commands.find(command => command.name === Commands.Radio)
+// 	const radioCommand = commands.find(command => command.name === Commands.Radio)
 
-	if (radioCommand && radioCommand.description) {
-		radioCommand.edit(radioApplicationCommandData())
-	}
-	else {
-		applicationCommands.create(radioApplicationCommandData())
-	}
-}
+// 	if (radioCommand && radioCommand.description) {
+// 		radioCommand.edit(radioApplicationCommandData())
+// 	}
+// 	else {
+// 		applicationCommands.create(radioApplicationCommandData())
+// 	}
+// }
 
 client.on('error', console.warn);
 
